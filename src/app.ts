@@ -5,7 +5,7 @@ import express from 'express';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import routes from './routes';
-import { errorHandler } from './middleware/error.middleware';
+import { errorMiddleware } from './middleware/error.middleware';
 import { notFound } from './middleware/not-found.middleware';
 import { setupSwagger } from './config/swagger';
 
@@ -36,6 +36,6 @@ app.get('/health', (_req, res) => {
 app.use('/api', routes);
 
 app.use(notFound);
-app.use(errorHandler);
+app.use(errorMiddleware);
 
 export default app;
