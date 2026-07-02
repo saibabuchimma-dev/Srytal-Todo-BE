@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-
 import { env } from './env';
 
 export async function connectDatabase() {
@@ -10,7 +9,6 @@ export async function connectDatabase() {
   } catch (error) {
     console.error('❌ MongoDB Connection Failed');
     console.error(error);
-
     process.exit(1);
   }
 }
