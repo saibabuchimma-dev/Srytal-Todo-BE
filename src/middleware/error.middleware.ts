@@ -1,9 +1,9 @@
-import { Request, Response, NextFunction } from 'express';
-import { ApiError } from '../utils/ApiError';
+import { NextFunction, Request, Response } from 'express';
+import { ApiError } from '@/utils/ApiError';
 
-export function errorHandler(
+export function errorMiddleware(
   err: Error,
-  req: Request,
+  _req: Request,
   res: Response,
   _next: NextFunction
 ) {
