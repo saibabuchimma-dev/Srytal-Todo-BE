@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { authMiddleware } from '@/middleware/auth.middleware';
 import { EmployeeController } from './employee.controller';
+import { authorize } from '@/middleware/authorize.middleware';
 
 const router = Router();
 const controller = new EmployeeController();
@@ -48,6 +49,7 @@ const controller = new EmployeeController();
 router.post(
   '/',
   authMiddleware,
+  authorize('Admin'),
   controller.create.bind(controller)
 );
 
@@ -72,6 +74,7 @@ router.post(
 router.get(
   '/',
   authMiddleware,
+  authorize('Admin'),
   controller.getAll.bind(controller)
 );
 
@@ -108,6 +111,7 @@ router.get(
 router.get(
   '/search',
   authMiddleware,
+  authorize('Admin'),
   controller.search.bind(controller)
 );
 
@@ -127,6 +131,7 @@ router.get(
 router.get(
   '/count',
   authMiddleware,
+  authorize('Admin'),
   controller.count.bind(controller)
 );
 
@@ -160,6 +165,7 @@ router.get(
 router.get(
   '/:id',
   authMiddleware,
+  authorize('Admin'),
   controller.getById.bind(controller)
 );
 
@@ -199,6 +205,7 @@ router.get(
 router.put(
   '/:id',
   authMiddleware,
+  authorize('Admin'),
   controller.update.bind(controller)
 );
 
@@ -228,6 +235,7 @@ router.put(
 router.delete(
   '/:id',
   authMiddleware,
+  authorize('Admin'),
   controller.delete.bind(controller)
 );
 

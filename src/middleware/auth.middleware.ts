@@ -21,9 +21,16 @@ export function authMiddleware(
   }
 
   try {
-    const decoded = jwt.verify(token, env.JWT_SECRET);
+    const decoded = jwt.verify(
+      token,
+      env.JWT_SECRET
+    ) as {
+      id: string;
+      email: string;
+      role: 'Admin' | 'Employee';
+    };
 
-    (req as any).user = decoded;
+    req.user = decoded;
 
     next();
   } catch {

@@ -3,24 +3,23 @@
     "target": "ES2022",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
-
     "rootDir": "./src",
     "outDir": "./dist",
-
     "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "resolveJsonModule": true,
-    "typeRoots": [
-      "./src/types",
-      "./node_modules/@types"
-    ],
+    "typeRoots": ["./src/types", "./node_modules/@types"],
     "types": ["node"],
-
     "paths": {
       "@/*": ["./src/*"]
     },
-
     "ignoreDeprecations": "6.0"
   },
   "include": ["src"]

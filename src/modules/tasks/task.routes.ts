@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { authMiddleware } from '@/middleware/auth.middleware';
 import { TaskController } from './task.controller';
+import { authorize } from '@/middleware/authorize.middleware';
 
 const router = Router();
 const controller = new TaskController();
@@ -73,6 +74,7 @@ const controller = new TaskController();
 router.post(
   '/',
   authMiddleware,
+  authorize('Admin'),
   controller.create.bind(controller)
 );
 
