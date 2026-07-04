@@ -1,10 +1,11 @@
-import bcrypt from 'bcryptjs';
-import { ApiError } from '@/utils/ApiError';
-import { EmployeeRepository } from './employee.repository';
+import bcrypt from "bcryptjs";
+import { ApiError } from "@/utils/ApiError";
+import { EmployeeRepository } from "./employee.repository";
 import {
+  ChangePasswordDto,
   CreateEmployeeDto,
   UpdateEmployeeDto,
-} from './employee.types';
+} from "./employee.types";
 
 const repository = new EmployeeRepository();
 
@@ -13,15 +14,24 @@ export class EmployeeService {
     const existingEmployee = await repository.findByEmail(data.email);
 
     if (existingEmployee) {
-      throw new ApiError(409, 'Employee already exists with this email');
+      throw new ApiError(409, "Employee already exists");
     }
 
-    const hashedPassword = await bcrypt.hash(data.password, 10);
+    // Temporary Password
+    const tempPassword = Math.random().toString(36).slice(-8);
 
-    return repository.create({
+    const hashedPassword = await bcrypt.hash(tempPassword, 10);
+
+    const employee = await repository.create({
       ...data,
       password: hashedPassword,
+      mustChangePassword: true,
     });
+
+    return {
+      employee,
+      tempPassword,
+    };
   }
 
   async findAll() {
@@ -32,33 +42,24 @@ export class EmployeeService {
     const employee = await repository.findById(id);
 
     if (!employee) {
-      throw new ApiError(404, 'Employee not found');
+      throw new ApiError(404, "Employee not found");
     }
 
     return employee;
   }
 
-  async update(
-    id: string,
-    data: Partial<UpdateEmployeeDto>
-  ) {
+  async update(id: string, data: Partial<UpdateEmployeeDto>) {
     const employee = await repository.findById(id);
 
     if (!employee) {
-      throw new ApiError(404, 'Employee not found');
+      throw new ApiError(404, "Employee not found");
     }
 
-    if (
-      data.email &&
-      data.email !== employee.email
-    ) {
+    if (data.email && data.email !== employee.email) {
       const exists = await repository.findByEmail(data.email);
 
       if (exists && exists.id !== employee.id) {
-        throw new ApiError(
-          409,
-          'Email already exists'
-        );
+        throw new ApiError(409, "Email already exists");
       }
     }
 
@@ -69,25 +70,64 @@ export class EmployeeService {
     const employee = await repository.findById(id);
 
     if (!employee) {
-      throw new ApiError(404, 'Employee not found');
+      throw new ApiError(404, "Employee not found");
     }
 
     await repository.delete(id);
   }
 
-  async search(
-    search = '',
-    page = 1,
-    limit = 10
-  ) {
-    return repository.search(
-      search,
-      page,
-      limit
-    );
+  async search(search = "", page = 1, limit = 10) {
+    return repository.search(search, page, limit);
   }
 
   async count() {
     return repository.count();
+  }
+
+  async recentEmployees(limit = 5) {
+    return repository.findRecent(limit);
+  }
+
+  async employeeStats() {
+    const [totalEmployees, activeEmployees, inactiveEmployees, roles] =
+      await Promise.all([
+        repository.count(),
+        repository.activeEmployees(),
+        repository.inactiveEmployees(),
+        repository.countByRole(),
+      ]);
+
+    return {
+      totalEmployees,
+      activeEmployees,
+      inactiveEmployees,
+      admins: roles.admins,
+      employees: roles.employees,
+    };
+  }
+
+  async changePassword(employeeId: string, data: ChangePasswordDto) {
+    const employee = await repository.findByIdWithPassword(employeeId);
+
+    if (!employee) {
+      throw new ApiError(404, "Employee not found");
+    }
+
+    const isMatch = await bcrypt.compare(
+      data.currentPassword,
+      employee.password,
+    );
+
+    if (!isMatch) {
+      throw new ApiError(400, "Current password is incorrect");
+    }
+
+    if (data.newPassword !== data.confirmPassword) {
+      throw new ApiError(400, "Passwords do not match");
+    }
+
+    const hashedPassword = await bcrypt.hash(data.newPassword, 10);
+
+    await repository.updatePassword(employeeId, hashedPassword);
   }
 }

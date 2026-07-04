@@ -1,18 +1,21 @@
-import { Request, Response } from 'express';
-
-import { EmployeeService } from './employee.service';
+import { Request, Response } from "express";
+import { EmployeeService } from "./employee.service";
 
 const service = new EmployeeService();
 
 export class EmployeeController {
-
   async create(req: Request, res: Response) {
-    const employee = await service.create(req.body);
+    const result = await service.create(req.body);
 
     res.status(201).json({
       success: true,
-      message: 'Employee created successfully',
-      data: employee,
+      message: "Employee created successfully",
+
+      data: result.employee,
+
+      credentials: {
+        tempPassword: result.tempPassword,
+      },
     });
   }
 
@@ -40,14 +43,11 @@ export class EmployeeController {
   async update(req: Request, res: Response) {
     const id = req.params.id as string;
 
-    const employee = await service.update(
-      id,
-      req.body
-    );
+    const employee = await service.update(id, req.body);
 
     res.status(200).json({
       success: true,
-      message: 'Employee updated successfully',
+      message: "Employee updated successfully",
       data: employee,
     });
   }
@@ -59,20 +59,16 @@ export class EmployeeController {
 
     res.status(200).json({
       success: true,
-      message: 'Employee deleted successfully',
+      message: "Employee deleted successfully",
     });
   }
 
   async search(req: Request, res: Response) {
-    const search = String(req.query.search ?? '');
+    const search = String(req.query.search ?? "");
     const page = Number(req.query.page ?? 1);
     const limit = Number(req.query.limit ?? 10);
 
-    const result = await service.search(
-      search,
-      page,
-      limit
-    );
+    const result = await service.search(search, page, limit);
 
     res.status(200).json({
       success: true,
@@ -86,6 +82,15 @@ export class EmployeeController {
     res.status(200).json({
       success: true,
       totalEmployees: total,
+    });
+  }
+
+  async changePassword(req: Request, res: Response) {
+    await service.changePassword(req.user!.id, req.body);
+
+    res.status(200).json({
+      success: true,
+      message: "Password changed successfully.",
     });
   }
 }

@@ -1,29 +1,19 @@
-import { Task } from './task.model';
-import {
-  CreateTaskDto,
-  UpdateTaskDto,
-} from './task.types';
+import { Task } from "./task.model";
+import { CreateTaskDto, UpdateTaskDto } from "./task.types";
 
 export class TaskRepository {
-
   async create(
     data: CreateTaskDto & {
       createdBy: string;
-    }
+    },
   ) {
     return Task.create(data);
   }
 
   async findAll() {
     return Task.find()
-      .populate(
-        'assignedTo',
-        'fullName email role avatar'
-      )
-      .populate(
-        'createdBy',
-        'fullName email'
-      )
+      .populate("assignedTo", "fullName email role avatar")
+      .populate("createdBy", "fullName email")
       .sort({
         createdAt: -1,
       });
@@ -31,36 +21,17 @@ export class TaskRepository {
 
   async findById(id: string) {
     return Task.findById(id)
-      .populate(
-        'assignedTo',
-        'fullName email role avatar'
-      )
-      .populate(
-        'createdBy',
-        'fullName email'
-      );
+      .populate("assignedTo", "fullName email role avatar")
+      .populate("createdBy", "fullName email");
   }
 
-  async update(
-    id: string,
-    data: Partial<UpdateTaskDto>
-  ) {
-    return Task.findByIdAndUpdate(
-      id,
-      data,
-      {
-        new: true,
-        runValidators: true,
-      }
-    )
-      .populate(
-        'assignedTo',
-        'fullName email role avatar'
-      )
-      .populate(
-        'createdBy',
-        'fullName email'
-      );
+  async update(id: string, data: Partial<UpdateTaskDto>) {
+    return Task.findByIdAndUpdate(id, data, {
+      new: true,
+      runValidators: true,
+    })
+      .populate("assignedTo", "fullName email role avatar")
+      .populate("createdBy", "fullName email");
   }
 
   async delete(id: string) {
@@ -68,12 +39,12 @@ export class TaskRepository {
   }
 
   async search(
-    search = '',
+    search = "",
     page = 1,
     limit = 10,
     status?: string,
     priority?: string,
-    assignedTo?: string
+    assignedTo?: string,
   ) {
     const filter: Record<string, unknown> = {};
 
@@ -82,13 +53,13 @@ export class TaskRepository {
         {
           title: {
             $regex: search,
-            $options: 'i',
+            $options: "i",
           },
         },
         {
           description: {
             $regex: search,
-            $options: 'i',
+            $options: "i",
           },
         },
       ];
@@ -108,56 +79,42 @@ export class TaskRepository {
 
     const skip = (page - 1) * limit;
 
-    const [tasks, total] =
-      await Promise.all([
-        Task.find(filter)
-          .populate(
-            'assignedTo',
-            'fullName email role avatar'
-          )
-          .populate(
-            'createdBy',
-            'fullName email'
-          )
-          .sort({
-            createdAt: -1,
-          })
-          .skip(skip)
-          .limit(limit),
+    const [tasks, total] = await Promise.all([
+      Task.find(filter)
+        .populate("assignedTo", "fullName email role avatar")
+        .populate("createdBy", "fullName email")
+        .sort({
+          createdAt: -1,
+        })
+        .skip(skip)
+        .limit(limit),
 
-        Task.countDocuments(filter),
-      ]);
+      Task.countDocuments(filter),
+    ]);
 
     return {
       tasks,
       total,
       page,
       limit,
-      totalPages: Math.ceil(
-        total / limit
-      ),
+      totalPages: Math.ceil(total / limit),
     };
   }
 
   async dashboard() {
-    const [
-      totalTasks,
-      pending,
-      inProgress,
-      completed,
-    ] = await Promise.all([
+    const [totalTasks, pending, inProgress, completed] = await Promise.all([
       Task.countDocuments(),
 
       Task.countDocuments({
-        status: 'Pending',
+        status: "Pending",
       }),
 
       Task.countDocuments({
-        status: 'In Progress',
+        status: "In Progress",
       }),
 
       Task.countDocuments({
-        status: 'Completed',
+        status: "Completed",
       }),
     ]);
 
@@ -169,26 +126,98 @@ export class TaskRepository {
     };
   }
 
-  async findByEmployee(
-    employeeId: string
-  ) {
+  async findByEmployee(employeeId: string) {
     return Task.find({
       assignedTo: employeeId,
     })
-      .populate(
-        'assignedTo',
-        'fullName email role avatar'
-      )
-      .populate(
-        'createdBy',
-        'fullName email'
-      )
+      .populate("assignedTo", "fullName email role avatar")
+      .populate("createdBy", "fullName email")
       .sort({
         dueDate: 1,
       });
   }
 
+  async updateStatus(id: string, status: string) {
+    return Task.findByIdAndUpdate(
+      id,
+      { status },
+      {
+        new: true,
+      },
+    ).populate("assignedTo", "-password");
+  }
+
   async count() {
     return Task.countDocuments();
+  }
+
+  async findRecent(limit = 5) {
+    return Task.find()
+      .populate("assignedTo", "fullName email role avatar")
+      .populate("createdBy", "fullName email")
+      .sort({
+        createdAt: -1,
+      })
+      .limit(limit);
+  }
+
+  async countByStatus() {
+    const [pending, inProgress, completed] = await Promise.all([
+      Task.countDocuments({
+        status: "Pending",
+      }),
+
+      Task.countDocuments({
+        status: "In Progress",
+      }),
+
+      Task.countDocuments({
+        status: "Completed",
+      }),
+    ]);
+
+    return {
+      pending,
+      inProgress,
+      completed,
+    };
+  }
+
+  async countByPriority() {
+    const [high, medium, low] = await Promise.all([
+      Task.countDocuments({
+        priority: "High",
+      }),
+
+      Task.countDocuments({
+        priority: "Medium",
+      }),
+
+      Task.countDocuments({
+        priority: "Low",
+      }),
+    ]);
+
+    return {
+      high,
+      medium,
+      low,
+    };
+  }
+
+  async completionRate() {
+    const [total, completed] = await Promise.all([
+      Task.countDocuments(),
+
+      Task.countDocuments({
+        status: "Completed",
+      }),
+    ]);
+
+    if (total === 0) {
+      return 0;
+    }
+
+    return Math.round((completed / total) * 100);
   }
 }

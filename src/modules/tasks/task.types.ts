@@ -20,6 +20,12 @@ export const createTaskSchema = z.object({
 
 export const updateTaskSchema = createTaskSchema.partial();
 
+export const updateTaskStatusSchema = z.object({
+  status: z.enum(["Pending", "In Progress", "Completed"]),
+});
+
+export type UpdateTaskStatusDto = z.infer<typeof updateTaskStatusSchema>;
+
 export const searchTaskSchema = z.object({
   search: z.string().optional(),
 

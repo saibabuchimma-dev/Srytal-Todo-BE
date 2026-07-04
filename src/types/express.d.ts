@@ -1,4 +1,4 @@
-import { JwtPayload } from 'jsonwebtoken';
+import { JwtPayload } from "jsonwebtoken";
 
 declare global {
   namespace Express {
@@ -6,7 +6,7 @@ declare global {
       user?: JwtPayload & {
         id: string;
         email: string;
-        role: 'Admin' | 'Employee';
+        role: "Admin" | "Employee";
       };
     }
   }

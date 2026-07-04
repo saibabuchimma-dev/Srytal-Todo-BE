@@ -1,7 +1,7 @@
-import { Router } from 'express';
-import { authMiddleware } from '@/middleware/auth.middleware';
-import { EmployeeController } from './employee.controller';
-import { authorize } from '@/middleware/authorize.middleware';
+import { Router } from "express";
+import { authMiddleware } from "@/middleware/auth.middleware";
+import { EmployeeController } from "./employee.controller";
+import { authorize } from "@/middleware/authorize.middleware";
 
 const router = Router();
 const controller = new EmployeeController();
@@ -18,7 +18,9 @@ const controller = new EmployeeController();
  * /employees:
  *   post:
  *     summary: Create Employee
- *     description: Create a new employee account.
+ *     description: >
+  Create a new employee account.
+  A temporary password is generated automatically and must be changed by the employee during their first login.
  *     tags:
  *       - Employees
  *     security:
@@ -32,13 +34,12 @@ const controller = new EmployeeController();
  *           example:
  *             fullName: John Doe
  *             email: john@example.com
- *             password: password123
  *             role: Employee
  *             avatar: https://avatar.com/john.png
  *             isActive: true
  *     responses:
  *       201:
- *         description: Employee created successfully
+ *         description: Employee created successfully with a temporary password.
  *         content:
  *           application/json:
  *             schema:
@@ -47,10 +48,10 @@ const controller = new EmployeeController();
  *         description: Email already exists
  */
 router.post(
-  '/',
+  "/",
   authMiddleware,
-  authorize('Admin'),
-  controller.create.bind(controller)
+  authorize("Admin"),
+  controller.create.bind(controller),
 );
 
 /**
@@ -72,10 +73,10 @@ router.post(
  *               $ref: '#/components/schemas/EmployeeListResponse'
  */
 router.get(
-  '/',
+  "/",
   authMiddleware,
-  authorize('Admin'),
-  controller.getAll.bind(controller)
+  authorize("Admin"),
+  controller.getAll.bind(controller),
 );
 
 /**
@@ -109,10 +110,10 @@ router.get(
  *         description: Search result
  */
 router.get(
-  '/search',
+  "/search",
   authMiddleware,
-  authorize('Admin'),
-  controller.search.bind(controller)
+  authorize("Admin"),
+  controller.search.bind(controller),
 );
 
 /**
@@ -129,10 +130,50 @@ router.get(
  *         description: Total employees
  */
 router.get(
-  '/count',
+  "/count",
   authMiddleware,
-  authorize('Admin'),
-  controller.count.bind(controller)
+  authorize("Admin"),
+  controller.count.bind(controller),
+);
+
+/**
+ * @swagger
+ * /employees/change-password:
+ *   patch:
+ *     summary: Change Password
+ *     description: Change password for the logged-in user.
+ *     tags:
+ *       - Employees
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - currentPassword
+ *               - newPassword
+ *               - confirmPassword
+ *             properties:
+ *               currentPassword:
+ *                 type: string
+ *                 example: Temp@123
+ *               newPassword:
+ *                 type: string
+ *                 example: Sai@12345
+ *               confirmPassword:
+ *                 type: string
+ *                 example: Sai@12345
+ *     responses:
+ *       200:
+ *         description: Password changed successfully
+ */
+router.patch(
+  "/change-password",
+  authMiddleware,
+  controller.changePassword.bind(controller),
 );
 
 /**
@@ -163,10 +204,10 @@ router.get(
  *         description: Employee not found
  */
 router.get(
-  '/:id',
+  "/:id",
   authMiddleware,
-  authorize('Admin'),
-  controller.getById.bind(controller)
+  authorize("Admin"),
+  controller.getById.bind(controller),
 );
 
 /**
@@ -203,10 +244,10 @@ router.get(
  *         description: Employee updated successfully
  */
 router.put(
-  '/:id',
+  "/:id",
   authMiddleware,
-  authorize('Admin'),
-  controller.update.bind(controller)
+  authorize("Admin"),
+  controller.update.bind(controller),
 );
 
 /**
@@ -233,10 +274,10 @@ router.put(
  *         description: Employee not found
  */
 router.delete(
-  '/:id',
+  "/:id",
   authMiddleware,
-  authorize('Admin'),
-  controller.delete.bind(controller)
+  authorize("Admin"),
+  controller.delete.bind(controller),
 );
 
 export default router;

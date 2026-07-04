@@ -1,7 +1,7 @@
-import mongoose from 'mongoose';
-import app from './app';
-import { connectDatabase } from './config/database';
-import { env } from './config/env';
+import mongoose from "mongoose";
+import app from "./app";
+import { connectDatabase } from "./config/database";
+import { env } from "./config/env";
 
 async function startServer() {
   try {
