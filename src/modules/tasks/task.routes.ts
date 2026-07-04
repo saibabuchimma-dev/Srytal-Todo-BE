@@ -1,7 +1,8 @@
-import { Router } from 'express';
-import { authMiddleware } from '@/middleware/auth.middleware';
-import { TaskController } from './task.controller';
-import { authorize } from '@/middleware/authorize.middleware';
+import { Router } from "express";
+import { authMiddleware } from "@/middleware/auth.middleware";
+import { TaskController } from "./task.controller";
+import { authorize } from "@/middleware/authorize.middleware";
+import { forcePasswordChange } from "@/middleware/forcePasswordChange.middleware";
 
 const router = Router();
 const controller = new TaskController();
@@ -72,10 +73,10 @@ const controller = new TaskController();
  *         description: Task created successfully
  */
 router.post(
-  '/',
+  "/",
   authMiddleware,
-  authorize('Admin'),
-  controller.create.bind(controller)
+  authorize("Admin"),
+  controller.create.bind(controller),
 );
 
 /**
@@ -91,9 +92,11 @@ router.post(
  *         description: List of tasks
  */
 router.get(
-  '/',
+  "/",
   authMiddleware,
-  controller.getAll.bind(controller)
+  forcePasswordChange,
+  authorize("Admin"),
+  controller.getAll.bind(controller),
 );
 
 /**
@@ -133,29 +136,26 @@ router.get(
  *       200:
  *         description: Filtered task list
  */
-router.get(
-  '/search',
-  authMiddleware,
-  controller.search.bind(controller)
-);
+router.get("/search", authMiddleware, forcePasswordChange, controller.search.bind(controller));
 
 /**
  * @swagger
  * /tasks/dashboard:
  *   get:
- *     summary: Dashboard Statistics
+ *     summary: Get Dashboard Statistics
+ *     description: Returns employee statistics, task statistics, recent employees and recent tasks.
  *     tags: [Tasks]
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: Dashboard statistics
+ *         description: Dashboard statistics returned successfully
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
  */
-router.get(
-  '/dashboard',
-  authMiddleware,
-  controller.dashboard.bind(controller)
-);
+router.get("/dashboard", authMiddleware, controller.dashboard.bind(controller));
 
 /**
  * @swagger
@@ -169,11 +169,7 @@ router.get(
  *       200:
  *         description: Logged in user's tasks
  */
-router.get(
-  '/my-tasks',
-  authMiddleware,
-  controller.myTasks.bind(controller)
-);
+router.get("/my-tasks", authMiddleware, forcePasswordChange, controller.myTasks.bind(controller));
 
 /**
  * @swagger
@@ -187,11 +183,7 @@ router.get(
  *       200:
  *         description: Total number of tasks
  */
-router.get(
-  '/count',
-  authMiddleware,
-  controller.count.bind(controller)
-);
+router.get("/count", authMiddleware, controller.count.bind(controller));
 
 /**
  * @swagger
@@ -211,11 +203,7 @@ router.get(
  *       200:
  *         description: Task details
  */
-router.get(
-  '/:id',
-  authMiddleware,
-  controller.getById.bind(controller)
-);
+router.get("/:id", authMiddleware, controller.getById.bind(controller));
 
 /**
  * @swagger
@@ -241,10 +229,58 @@ router.get(
  *       200:
  *         description: Task updated successfully
  */
-router.put(
-  '/:id',
+router.put("/:id", authMiddleware, controller.update.bind(controller));
+
+/**
+ * @swagger
+ * /tasks/{id}/status:
+ *   patch:
+ *     summary: Update Task Status
+ *     description: Employee can update the status of their assigned task.
+ *     tags: [Tasks]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: Task ID
+ *         schema:
+ *           type: string
+ *           example: 686523c5b65cde66f9831d18
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - status
+ *             properties:
+ *               status:
+ *                 type: string
+ *                 enum:
+ *                   - Pending
+ *                   - In Progress
+ *                   - Completed
+ *                 example: In Progress
+ *     responses:
+ *       200:
+ *         description: Task status updated successfully
+ *       400:
+ *         description: Invalid request
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: This task is not assigned to you
+ *       404:
+ *         description: Task not found
+ */
+router.patch(
+  "/:id/status",
   authMiddleware,
-  controller.update.bind(controller)
+  authorize("Employee"),
+  controller.updateStatus.bind(controller),
 );
 
 /**
@@ -265,10 +301,6 @@ router.put(
  *       200:
  *         description: Task deleted successfully
  */
-router.delete(
-  '/:id',
-  authMiddleware,
-  controller.delete.bind(controller)
-);
+router.delete("/:id", authMiddleware, controller.delete.bind(controller));
 
 export default router;

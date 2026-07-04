@@ -1,4 +1,4 @@
-import mongoose, { InferSchemaType, Schema } from 'mongoose';
+import mongoose, { InferSchemaType, Schema } from "mongoose";
 
 const employeeSchema = new Schema(
   {
@@ -24,36 +24,47 @@ const employeeSchema = new Schema(
 
     role: {
       type: String,
-      enum: ['Admin', 'Employee'],
-      default: 'Employee',
+      enum: ["Admin", "Employee"],
+      default: "Employee",
     },
 
     avatar: {
       type: String,
-      default: '',
+      default: "",
     },
 
     isActive: {
       type: Boolean,
       default: true,
     },
+
+    mustChangePassword: {
+      type: Boolean,
+      default: true,
+    },
+
+    passwordChangedAt: {
+      type: Date,
+    },
+
+    lastLogin: {
+      type: Date,
+    },
   },
   {
     timestamps: true,
     versionKey: false,
-  }
+  },
 );
 
-employeeSchema.index({ email: 1 });
-
 employeeSchema.index({
-  fullName: 'text',
-  email: 'text',
+  fullName: "text",
+  email: "text",
 });
 
 export type EmployeeDocument = InferSchemaType<typeof employeeSchema>;
 
 export const Employee = mongoose.model<EmployeeDocument>(
-  'Employee',
-  employeeSchema
+  "Employee",
+  employeeSchema,
 );
