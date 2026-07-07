@@ -8,6 +8,7 @@ import routes from "./routes";
 import { errorMiddleware } from "./middleware/error.middleware";
 import { notFound } from "./middleware/not-found.middleware";
 import { setupSwagger } from "./config/swagger";
+import employeeRoutes from '@/modules/employee/employee.routes';
 
 const app = express();
 
@@ -34,6 +35,7 @@ app.get("/health", (_req, res) => {
 });
 
 app.use("/api", routes);
+app.use('/api/employees', employeeRoutes);
 
 app.use(notFound);
 app.use(errorMiddleware);

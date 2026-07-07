@@ -5,7 +5,6 @@ const taskSchema = new Schema(
     assignedTo: {
       type: Schema.Types.ObjectId,
       ref: "Employee",
-      required: false,
       default: null,
     },
 

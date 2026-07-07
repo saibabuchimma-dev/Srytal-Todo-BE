@@ -1,5 +1,6 @@
 import { Task } from "./task.model";
 import { CreateTaskDto, UpdateTaskDto } from "./task.types";
+import mongoose from "mongoose";
 
 export class TaskRepository {
   async create(
@@ -19,11 +20,15 @@ export class TaskRepository {
       });
   }
 
-  async findById(id: string) {
-    return Task.findById(id)
-      .populate("assignedTo", "fullName email role avatar")
-      .populate("createdBy", "fullName email");
+ async findById(id: string) {
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return null;
   }
+
+  return Task.findById(id)
+    .populate("assignedTo", "fullName email role avatar")
+    .populate("createdBy", "fullName email");
+}
 
   async update(id: string, data: Partial<UpdateTaskDto>) {
     return Task.findByIdAndUpdate(id, data, {

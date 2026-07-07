@@ -94,7 +94,6 @@ router.post(
 router.get(
   "/",
   authMiddleware,
-  forcePasswordChange,
   authorize("Admin"),
   controller.getAll.bind(controller),
 );
@@ -203,7 +202,12 @@ router.get("/count", authMiddleware, controller.count.bind(controller));
  *       200:
  *         description: Task details
  */
-router.get("/:id", authMiddleware, controller.getById.bind(controller));
+router.get(
+  "/:id",
+  authMiddleware,
+  authorize("Admin"),
+  controller.getById.bind(controller),
+);
 
 /**
  * @swagger
@@ -229,7 +233,12 @@ router.get("/:id", authMiddleware, controller.getById.bind(controller));
  *       200:
  *         description: Task updated successfully
  */
-router.put("/:id", authMiddleware, controller.update.bind(controller));
+router.put(
+  "/:id",
+  authMiddleware,
+  authorize("Admin"),
+  controller.update.bind(controller),
+);
 
 /**
  * @swagger
@@ -301,6 +310,11 @@ router.patch(
  *       200:
  *         description: Task deleted successfully
  */
-router.delete("/:id", authMiddleware, controller.delete.bind(controller));
+router.delete(
+  "/:id",
+  authMiddleware,
+  authorize("Admin"),
+  controller.delete.bind(controller),
+);
 
 export default router;

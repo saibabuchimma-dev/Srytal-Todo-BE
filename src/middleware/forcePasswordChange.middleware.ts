@@ -7,22 +7,26 @@ const repository = new EmployeeRepository();
 export async function forcePasswordChange(
   req: Request,
   _res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
   if (!req.user) {
+    return next();
+  }
+
+  if (req.user.role === "Admin") {
     return next();
   }
 
   const employee = await repository.findById(req.user.id);
 
   if (!employee) {
-    throw new ApiError(404, 'Employee not found');
+    throw new ApiError(404, "Employee not found");
   }
 
   if (employee.mustChangePassword) {
     throw new ApiError(
       403,
-      'You must change your password before continuing.'
+      "You must change your password before continuing."
     );
   }
 

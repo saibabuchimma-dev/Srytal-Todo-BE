@@ -18,9 +18,6 @@ const controller = new EmployeeController();
  * /employees:
  *   post:
  *     summary: Create Employee
- *     description: >
-  Create a new employee account.
-  A temporary password is generated automatically and must be changed by the employee during their first login.
  *     tags:
  *       - Employees
  *     security:
@@ -31,21 +28,9 @@ const controller = new EmployeeController();
  *         application/json:
  *           schema:
  *             $ref: '#/components/schemas/CreateEmployee'
- *           example:
- *             fullName: John Doe
- *             email: john@example.com
- *             role: Employee
- *             avatar: https://avatar.com/john.png
- *             isActive: true
  *     responses:
  *       201:
- *         description: Employee created successfully with a temporary password.
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/EmployeeResponse'
- *       409:
- *         description: Email already exists
+ *         description: Employee created successfully
  */
 router.post(
   "/",

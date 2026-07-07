@@ -10,7 +10,7 @@ const employeeService = new EmployeeService();
 
 export class TaskService {
   async create(data: CreateTaskDto, createdBy: string) {
-    if (data.assignedTo) {
+    if (data.assignedTo && data.assignedTo.trim() !== "") {
       const employee = await employeeRepository.findById(data.assignedTo);
 
       if (!employee) {
@@ -45,7 +45,7 @@ export class TaskService {
       throw new ApiError(404, "Task not found");
     }
 
-    if (data.assignedTo) {
+    if (data.assignedTo && data.assignedTo.trim() !== "") {
       const employee = await employeeRepository.findById(data.assignedTo);
 
       if (!employee) {
