@@ -8,6 +8,12 @@ const taskSchema = new Schema(
       default: null,
     },
 
+    project: {
+      type: Schema.Types.ObjectId,
+      ref: "Project",
+      default: null,
+    },
+
     createdBy: {
       type: Schema.Types.ObjectId,
       ref: "Employee",

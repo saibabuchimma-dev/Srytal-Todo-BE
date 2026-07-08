@@ -2,12 +2,9 @@ import { z } from "zod";
 
 export const createTaskSchema = z.object({
   assignedTo: z.string().nullable().optional(),
+  project: z.string().nullable().optional(),
 
-  title: z
-    .string()
-    .trim()
-    .min(3, "Title must be at least 3 characters")
-    .max(100, "Title cannot exceed 100 characters"),
+  title: z.string().trim().min(3).max(100),
 
   description: z.string().trim().optional().default(""),
 

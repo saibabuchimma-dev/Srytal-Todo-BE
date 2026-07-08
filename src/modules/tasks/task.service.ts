@@ -3,10 +3,12 @@ import { EmployeeRepository } from "../employee/employee.repository";
 import { TaskRepository } from "./task.repository";
 import { CreateTaskDto, SearchTaskDto, UpdateTaskDto } from "./task.types";
 import { EmployeeService } from "../employee/employee.service";
+import { ProjectRepository } from "../project/project.repository";
 
 const repository = new TaskRepository();
 const employeeRepository = new EmployeeRepository();
 const employeeService = new EmployeeService();
+const projectRepository = new ProjectRepository();
 
 export class TaskService {
   async create(data: CreateTaskDto, createdBy: string) {
@@ -15,6 +17,13 @@ export class TaskService {
 
       if (!employee) {
         throw new ApiError(404, "Assigned employee not found");
+      }
+    }
+    if (data.project && data.project.trim() !== "") {
+      const project = await projectRepository.findById(data.project);
+
+      if (!project) {
+        throw new ApiError(404, "Project not found");
       }
     }
 
@@ -50,6 +59,14 @@ export class TaskService {
 
       if (!employee) {
         throw new ApiError(404, "Assigned employee not found");
+      }
+    }
+
+    if (data.project && data.project.trim() !== "") {
+      const project = await projectRepository.findById(data.project);
+
+      if (!project) {
+        throw new ApiError(404, "Project not found");
       }
     }
 

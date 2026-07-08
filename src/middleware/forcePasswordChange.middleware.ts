@@ -1,6 +1,6 @@
-import { NextFunction, Request, Response } from 'express';
-import { EmployeeRepository } from '@/modules/employee/employee.repository';
-import { ApiError } from '@/utils/ApiError';
+import { NextFunction, Request, Response } from "express";
+import { EmployeeRepository } from "@/modules/employee/employee.repository";
+import { ApiError } from "@/utils/ApiError";
 
 const repository = new EmployeeRepository();
 
@@ -24,10 +24,7 @@ export async function forcePasswordChange(
   }
 
   if (employee.mustChangePassword) {
-    throw new ApiError(
-      403,
-      "You must change your password before continuing."
-    );
+    throw new ApiError(403, "You must change your password before continuing.");
   }
 
   next();
