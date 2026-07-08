@@ -15,20 +15,22 @@ export class TaskRepository {
     return Task.find()
       .populate("assignedTo", "fullName email role avatar")
       .populate("createdBy", "fullName email")
+      .populate("project", "name status")
       .sort({
         createdAt: -1,
       });
   }
 
- async findById(id: string) {
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return null;
-  }
+  async findById(id: string) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return null;
+    }
 
-  return Task.findById(id)
-    .populate("assignedTo", "fullName email role avatar")
-    .populate("createdBy", "fullName email");
-}
+    return Task.findById(id)
+      .populate("assignedTo", "fullName email role avatar")
+      .populate("createdBy", "fullName email")
+      .populate("project", "name status");
+  }
 
   async update(id: string, data: Partial<UpdateTaskDto>) {
     return Task.findByIdAndUpdate(id, data, {
@@ -36,7 +38,8 @@ export class TaskRepository {
       runValidators: true,
     })
       .populate("assignedTo", "fullName email role avatar")
-      .populate("createdBy", "fullName email");
+      .populate("createdBy", "fullName email")
+      .populate("project", "name status");
   }
 
   async delete(id: string) {
@@ -50,6 +53,7 @@ export class TaskRepository {
     status?: string,
     priority?: string,
     assignedTo?: string,
+    project?: string,
   ) {
     const filter: Record<string, unknown> = {};
 
@@ -82,12 +86,17 @@ export class TaskRepository {
       filter.assignedTo = assignedTo;
     }
 
+    if (project) {
+      filter.project = project;
+    }
+
     const skip = (page - 1) * limit;
 
     const [tasks, total] = await Promise.all([
       Task.find(filter)
         .populate("assignedTo", "fullName email role avatar")
         .populate("createdBy", "fullName email")
+        .populate("project", "name status")
         .sort({
           createdAt: -1,
         })
@@ -137,6 +146,7 @@ export class TaskRepository {
     })
       .populate("assignedTo", "fullName email role avatar")
       .populate("createdBy", "fullName email")
+      .populate("project", "name status")
       .sort({
         dueDate: 1,
       });
@@ -149,7 +159,9 @@ export class TaskRepository {
       {
         new: true,
       },
-    ).populate("assignedTo", "-password");
+    )
+      .populate("assignedTo", "-password")
+      .populate("project", "name status");
   }
 
   async count() {
@@ -160,6 +172,7 @@ export class TaskRepository {
     return Task.find()
       .populate("assignedTo", "fullName email role avatar")
       .populate("createdBy", "fullName email")
+      .populate("project", "name status")
       .sort({
         createdAt: -1,
       })

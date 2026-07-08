@@ -1,5 +1,5 @@
 import { Employee } from "./employee.model";
-import {  UpdateEmployeeDto } from "./employee.types";
+import { UpdateEmployeeDto } from "./employee.types";
 
 type Filter = {
   $or?: {
