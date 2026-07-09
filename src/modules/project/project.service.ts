@@ -87,6 +87,24 @@ export class ProjectService {
     await repository.delete(id);
   }
 
+  async projectDetails(id:string){
+   const project =
+      await repository.findProjectDetails(id);
+
+   if(!project){
+      throw new ApiError(404,"Project not found");
+   }
+
+   return project;
+}
+
+async employeeTasks(projectId:string, employeeId:string){
+   return repository.getEmployeeTasks(
+      projectId,
+      employeeId
+   );
+}
+
   async search(query: SearchProjectDto) {
     return repository.search(
       query.search,
