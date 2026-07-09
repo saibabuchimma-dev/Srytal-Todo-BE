@@ -212,9 +212,10 @@ router.get("/count", authMiddleware, controller.count.bind(controller));
 
 /**
  * @swagger
- * /projects/{id}:
+ * /projects/{id}/details:
  *   get:
- *     summary: Get Project By Id
+ *     summary: Get complete project details
+ *     description: Returns project information along with members and tasks grouped by employee.
  *     tags: [Projects]
  *     security:
  *       - bearerAuth: []
@@ -226,9 +227,49 @@ router.get("/count", authMiddleware, controller.count.bind(controller));
  *           type: string
  *     responses:
  *       200:
- *         description: Project details
+ *         description: Project details returned successfully
  */
+
+router.get(
+   "/:id/details",
+   authMiddleware,
+   authorize("Admin"),
+   controller.projectDetails.bind(controller)
+);
+
+/**
+ * @swagger
+ * /projects/{projectId}/employees/{employeeId}/tasks:
+ *   get:
+ *     summary: Get employee tasks in project
+ *     tags: [Projects]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: projectId
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: path
+ *         name: employeeId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Employee tasks
+ */
+
+router.get(
+   "/:projectId/employees/:employeeId/tasks",
+   authMiddleware,
+   authorize("Admin"),
+   controller.employeeTasks.bind(controller)
+);
+
 router.get("/:id", authMiddleware, controller.getById.bind(controller));
+
 
 /**
  * @swagger

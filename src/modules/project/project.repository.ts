@@ -1,5 +1,6 @@
 import { Project } from "./project.model";
 import { CreateProjectDto, UpdateProjectDto } from "./project.types";
+import { Task } from "../tasks/task.model";
 
 export class ProjectRepository {
   async create(
@@ -43,6 +44,15 @@ export class ProjectRepository {
   async delete(id: string) {
     return Project.findByIdAndDelete(id);
   }
+
+  async getEmployeeTasks(projectId:string, employeeId:string){
+   return Task.find({
+      project:projectId,
+      assignedTo:employeeId
+   }).sort({
+      createdAt:-1
+   });
+}
 
   async search(search = "", page = 1, limit = 10, status?: string) {
     const filter: Record<string, unknown> = {};
@@ -116,6 +126,28 @@ export class ProjectRepository {
         createdAt: -1,
       });
   }
+
+async findProjectDetails(id: string) {
+   const project = await Project.findById(id)
+      .populate("members","fullName email avatar role");
+
+   if(!project){
+      return null;
+   }
+
+   const tasks = await Task.find({
+      project:id
+   })
+   .populate("assignedTo","fullName email avatar")
+   .sort({
+      createdAt:-1
+   });
+
+   return {
+      ...project.toObject(),
+      tasks
+   };
+}
 
   async dashboard() {
     const [totalProjects, planning, inProgress, completed] = await Promise.all([
