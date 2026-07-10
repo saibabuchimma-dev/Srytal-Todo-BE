@@ -45,14 +45,14 @@ export class ProjectRepository {
     return Project.findByIdAndDelete(id);
   }
 
-  async getEmployeeTasks(projectId:string, employeeId:string){
-   return Task.find({
-      project:projectId,
-      assignedTo:employeeId
-   }).sort({
-      createdAt:-1
-   });
-}
+  async getEmployeeTasks(projectId: string, employeeId: string) {
+    return Task.find({
+      project: projectId,
+      assignedTo: employeeId,
+    }).sort({
+      createdAt: -1,
+    });
+  }
 
   async search(search = "", page = 1, limit = 10, status?: string) {
     const filter: Record<string, unknown> = {};
@@ -127,27 +127,75 @@ export class ProjectRepository {
       });
   }
 
-async findProjectDetails(id: string) {
-   const project = await Project.findById(id)
-      .populate("members","fullName email avatar role");
+  async findProjectDetails(id: string) {
+    const project = await Project.findById(id);
 
-   if(!project){
+    if (!project) {
       return null;
-   }
+    }
 
-   const tasks = await Task.find({
-      project:id
-   })
-   .populate("assignedTo","fullName email avatar")
-   .sort({
-      createdAt:-1
-   });
+    const tasks = await Task.find({
+      project: id,
+    })
+      .populate("assignedTo", "fullName email avatar role")
+      .sort({
+        createdAt: -1,
+      });
 
-   return {
-      ...project.toObject(),
-      tasks
-   };
-}
+    const employeeMap = new Map();
+
+    let pending = 0;
+    let completed = 0;
+    let inProgress = 0;
+
+    for (const task of tasks) {
+      if (task.status === "Pending") pending++;
+      if (task.status === "Completed") completed++;
+      if (task.status === "In Progress") inProgress++;
+
+      if (!task.assignedTo) continue;
+
+      const employee = task.assignedTo as any;
+
+      if (!employeeMap.has(employee._id.toString())) {
+        employeeMap.set(employee._id.toString(), {
+          employee,
+          taskCount: 0,
+          tasks: [],
+        });
+      }
+
+      const item = employeeMap.get(employee._id.toString());
+
+      item.taskCount++;
+      item.tasks.push(task);
+    }
+
+    return {
+      project,
+      stats: {
+        totalTasks: tasks.length,
+        completed,
+        pending,
+        inProgress,
+      },
+      employees: Array.from(employeeMap.values()),
+    };
+  }
+
+  async addMember(projectId: string, employeeId: string) {
+    return Project.findByIdAndUpdate(
+      projectId,
+      {
+        $addToSet: {
+          members: employeeId,
+        },
+      },
+      {
+        new: true,
+      },
+    );
+  }
 
   async dashboard() {
     const [totalProjects, planning, inProgress, completed] = await Promise.all([

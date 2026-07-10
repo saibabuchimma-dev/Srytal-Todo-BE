@@ -47,48 +47,47 @@ export class TaskRepository {
   }
 
   async findByProject(projectId: string) {
-  return Task.find({
-    project: projectId,
-  })
-    .populate("assignedTo", "fullName email role avatar")
-    .populate("createdBy", "fullName email")
-    .populate("project", "name status")
-    .sort({
-      createdAt: -1,
-    });
-}
-
-async projectStats(projectId: string) {
-  const [total, pending, inProgress, completed] = await Promise.all([
-    Task.countDocuments({
+    return Task.find({
       project: projectId,
-    }),
+    })
+      .populate("assignedTo", "fullName email role avatar")
+      .populate("createdBy", "fullName email")
+      .populate("project", "name status")
+      .sort({
+        createdAt: -1,
+      });
+  }
 
-    Task.countDocuments({
-      project: projectId,
-      status: "Pending",
-    }),
+  async projectStats(projectId: string) {
+    const [total, pending, inProgress, completed] = await Promise.all([
+      Task.countDocuments({
+        project: projectId,
+      }),
 
-    Task.countDocuments({
-      project: projectId,
-      status: "In Progress",
-    }),
+      Task.countDocuments({
+        project: projectId,
+        status: "Pending",
+      }),
 
-    Task.countDocuments({
-      project: projectId,
-      status: "Completed",
-    }),
-  ]);
+      Task.countDocuments({
+        project: projectId,
+        status: "In Progress",
+      }),
 
-  return {
-    total,
-    pending,
-    inProgress,
-    completed,
-    completionRate:
-      total === 0 ? 0 : Math.round((completed / total) * 100),
-  };
-}
+      Task.countDocuments({
+        project: projectId,
+        status: "Completed",
+      }),
+    ]);
+
+    return {
+      total,
+      pending,
+      inProgress,
+      completed,
+      completionRate: total === 0 ? 0 : Math.round((completed / total) * 100),
+    };
+  }
 
   async search(
     search = "",

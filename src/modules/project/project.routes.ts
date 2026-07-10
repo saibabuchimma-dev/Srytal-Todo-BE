@@ -231,10 +231,10 @@ router.get("/count", authMiddleware, controller.count.bind(controller));
  */
 
 router.get(
-   "/:id/details",
-   authMiddleware,
-   authorize("Admin"),
-   controller.projectDetails.bind(controller)
+  "/:id/details",
+  authMiddleware,
+  authorize("Admin"),
+  controller.projectDetails.bind(controller),
 );
 
 /**
@@ -262,14 +262,13 @@ router.get(
  */
 
 router.get(
-   "/:projectId/employees/:employeeId/tasks",
-   authMiddleware,
-   authorize("Admin"),
-   controller.employeeTasks.bind(controller)
+  "/:projectId/employees/:employeeId/tasks",
+  authMiddleware,
+  authorize("Admin"),
+  controller.employeeTasks.bind(controller),
 );
 
 router.get("/:id", authMiddleware, controller.getById.bind(controller));
-
 
 /**
  * @swagger

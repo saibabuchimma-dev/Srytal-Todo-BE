@@ -89,28 +89,28 @@ export class ProjectController {
     });
   }
 
-async projectDetails(req: Request, res: Response) {
-  const projectId = req.params.id as string;
+  async projectDetails(req: Request, res: Response) {
+    const projectId = req.params.id as string;
 
-  const data = await service.projectDetails(projectId);
+    const data = await service.projectDetails(projectId);
 
-  res.status(200).json({
-    success: true,
-    data,
-  });
-}
+    res.status(200).json({
+      success: true,
+      data,
+    });
+  }
 
-async employeeTasks(req: Request, res: Response) {
-  const projectId = req.params.projectId as string;
-  const employeeId = req.params.employeeId as string;
+  async employeeTasks(req: Request, res: Response) {
+    const projectId = req.params.projectId as string;
+    const employeeId = req.params.employeeId as string;
 
-  const data = await service.employeeTasks(projectId, employeeId);
+    const data = await service.employeeTasks(projectId, employeeId);
 
-  res.status(200).json({
-    success: true,
-    data,
-  });
-}
+    res.status(200).json({
+      success: true,
+      data,
+    });
+  }
 
   async myProjects(req: Request, res: Response) {
     const user = req.user!;
