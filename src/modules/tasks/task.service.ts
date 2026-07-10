@@ -27,10 +27,16 @@ export class TaskService {
       }
     }
 
-    return repository.create({
+    const task = await repository.create({
       ...data,
       createdBy,
     });
+
+    if (data.project && data.assignedTo) {
+      await projectRepository.addMember(data.project, data.assignedTo);
+    }
+
+    return task;
   }
 
   async findAll() {
