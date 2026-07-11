@@ -25,16 +25,12 @@ export type UpdateTaskStatusDto = z.infer<typeof updateTaskStatusSchema>;
 
 export const searchTaskSchema = z.object({
   search: z.string().optional(),
-
   page: z.coerce.number().min(1).default(1),
-
   limit: z.coerce.number().min(1).max(100).default(10),
-
   status: z.enum(["Pending", "In Progress", "Completed"]).optional(),
-
   priority: z.enum(["Low", "Medium", "High"]).optional(),
-
   assignedTo: z.string().optional(),
+  project: z.string().optional(),
 });
 
 export interface TaskParams {

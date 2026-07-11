@@ -128,7 +128,9 @@ export class ProjectRepository {
   }
 
   async findProjectDetails(id: string) {
-    const project = await Project.findById(id);
+  const project = await Project.findById(id)
+  .populate("members", "fullName email role avatar")
+  .populate("createdBy", "fullName email");
 
     if (!project) {
       return null;
@@ -180,6 +182,7 @@ export class ProjectRepository {
         inProgress,
       },
       employees: Array.from(employeeMap.values()),
+      tasks,
     };
   }
 
