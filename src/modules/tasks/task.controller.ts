@@ -72,6 +72,7 @@ export class TaskController {
       priority: req.query.priority?.toString() as
         "Low" | "Medium" | "High" | undefined,
       assignedTo: req.query.assignedTo?.toString(),
+      project: req.query.project?.toString(),
     });
 
     res.status(200).json({

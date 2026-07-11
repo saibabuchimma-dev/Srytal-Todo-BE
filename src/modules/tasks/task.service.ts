@@ -97,6 +97,7 @@ export class TaskService {
       query.status,
       query.priority,
       query.assignedTo,
+      query.project,
     );
   }
 
