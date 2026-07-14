@@ -5,17 +5,12 @@ const service = new EmployeeService();
 
 export class EmployeeController {
   async create(req: Request, res: Response) {
-    const result = await service.create(req.body);
+    const { employee } = await service.create(req.body);
 
     res.status(201).json({
       success: true,
       message: "Employee created successfully",
-
-      data: result.employee,
-
-      credentials: {
-        tempPassword: result.tempPassword,
-      },
+      data: employee,
     });
   }
 
