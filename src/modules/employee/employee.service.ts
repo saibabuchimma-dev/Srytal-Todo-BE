@@ -6,8 +6,11 @@ import {
   CreateEmployeeDto,
   UpdateEmployeeDto,
 } from "./employee.types";
+import { welcomeEmployeeTemplate } from "@/templates/emails";
+import { MailService } from "../mail/mail.service";
 
 const repository = new EmployeeRepository();
+const mailService = new MailService();
 
 export class EmployeeService {
   async create(data: CreateEmployeeDto) {
@@ -17,8 +20,8 @@ export class EmployeeService {
       throw new ApiError(409, "Employee already exists");
     }
 
-    // Temporary Password
-    const tempPassword = Math.random().toString(36).slice(-8);
+    // Generate Temporary Password
+    const tempPassword = this.generateTempPassword();
 
     const hashedPassword = await bcrypt.hash(tempPassword, 10);
 
@@ -27,6 +30,22 @@ export class EmployeeService {
       password: hashedPassword,
       mustChangePassword: true,
     });
+
+    try {
+      await mailService.sendWelcomeEmployeeEmail(
+        employee.email,
+        "Welcome to SRYTAL Employee Portal",
+        welcomeEmployeeTemplate({
+          fullName: employee.fullName,
+          email: employee.email,
+          temporaryPassword: tempPassword,
+        }),
+      );
+
+      console.log(`Welcome email sent to ${employee.email}`);
+    } catch (error) {
+      console.error("Failed to send welcome email:", error);
+    }
 
     return {
       employee,
@@ -127,7 +146,18 @@ export class EmployeeService {
     }
 
     const hashedPassword = await bcrypt.hash(data.newPassword, 10);
-
     await repository.updatePassword(employeeId, hashedPassword);
+  }
+
+  private generateTempPassword(length = 10): string {
+    const chars =
+      "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789@#$%";
+    let password = "";
+
+    for (let i = 0; i < length; i++) {
+      password += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+
+    return password;
   }
 }

@@ -149,6 +149,7 @@ export class EmployeeRepository {
       {
         password,
         mustChangePassword: false,
+        passwordChangedAt: new Date(),
       },
       {
         new: true,

@@ -33,6 +33,7 @@ export class AuthService {
 
     return {
       token,
+      mustChangePassword: user.mustChangePassword,
       user: {
         id: user.id,
         fullName: user.fullName,

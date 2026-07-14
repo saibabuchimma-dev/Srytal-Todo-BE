@@ -128,9 +128,9 @@ export class ProjectRepository {
   }
 
   async findProjectDetails(id: string) {
-  const project = await Project.findById(id)
-  .populate("members", "fullName email role avatar")
-  .populate("createdBy", "fullName email");
+    const project = await Project.findById(id)
+      .populate("members", "fullName email role avatar")
+      .populate("createdBy", "fullName email");
 
     if (!project) {
       return null;
