@@ -141,6 +141,10 @@ export class EmployeeService {
       throw new ApiError(400, "Current password is incorrect");
     }
 
+    if (data.newPassword.length < 8) {
+      throw new ApiError(400, "Password must be at least 8 characters long");
+    }
+
     if (data.newPassword !== data.confirmPassword) {
       throw new ApiError(400, "Passwords do not match");
     }
