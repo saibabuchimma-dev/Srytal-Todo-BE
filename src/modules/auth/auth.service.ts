@@ -21,8 +21,11 @@ export class AuthService {
       throw new ApiError(401, "Invalid email or password");
     }
 
+    await repository.updateLastLogin(user.id);
+
     const payload: JwtPayload = {
       id: user.id,
+      fullName: user.fullName,
       email: user.email,
       role: user.role,
     };
@@ -39,6 +42,7 @@ export class AuthService {
         fullName: user.fullName,
         email: user.email,
         role: user.role,
+        avatar: user.avatar,
         mustChangePassword: user.mustChangePassword,
       },
     };

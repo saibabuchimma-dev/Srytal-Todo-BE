@@ -5,6 +5,7 @@ export interface LoginDto {
 
 export interface JwtPayload {
   id: string;
+  fullName: string;
   email: string;
   role: "Admin" | "Employee";
 }

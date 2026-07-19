@@ -156,4 +156,10 @@ export class EmployeeRepository {
       },
     );
   }
+
+  async updateLastLogin(id: string) {
+    return Employee.findByIdAndUpdate(id, {
+      lastLogin: new Date(),
+    });
+  }
 }
