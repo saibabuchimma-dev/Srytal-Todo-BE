@@ -161,6 +161,8 @@ router.patch(
   controller.changePassword.bind(controller),
 );
 
+router.get("/me", authMiddleware, controller.me.bind(controller));
+
 /**
  * @swagger
  * /employees/{id}:

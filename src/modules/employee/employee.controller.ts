@@ -88,4 +88,13 @@ export class EmployeeController {
       message: "Password changed successfully.",
     });
   }
+
+  async me(req: Request, res: Response) {
+    const employee = await service.findById(req.user!.id);
+
+    res.status(200).json({
+      success: true,
+      data: employee,
+    });
+  }
 }

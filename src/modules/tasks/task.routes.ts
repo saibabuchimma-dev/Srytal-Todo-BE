@@ -221,12 +221,7 @@ router.get("/count", authMiddleware, controller.count.bind(controller));
  *       200:
  *         description: Task details
  */
-router.get(
-  "/:id",
-  authMiddleware,
-  authorize("Admin"),
-  controller.getById.bind(controller),
-);
+router.get("/:id", authMiddleware, controller.getById.bind(controller));
 
 /**
  * @swagger
