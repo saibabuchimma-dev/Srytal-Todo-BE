@@ -43,11 +43,29 @@ export class TaskService {
     return repository.findAll();
   }
 
-  async findById(id: string) {
+  async findById(id: string, userId: string, role: string) {
     const task = await repository.findById(id);
 
     if (!task) {
       throw new ApiError(404, "Task not found");
+    }
+
+    if (role === "Admin") {
+      return task;
+    }
+
+    const assignedEmployeeId =
+      task.assignedTo &&
+      typeof task.assignedTo === "object" &&
+      "_id" in task.assignedTo
+        ? String((task.assignedTo as any)._id)
+        : String(task.assignedTo);
+
+    if (assignedEmployeeId !== userId) {
+      throw new ApiError(
+        403,
+        "You do not have permission to access this resource.",
+      );
     }
 
     return task;

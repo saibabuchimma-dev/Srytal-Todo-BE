@@ -31,7 +31,9 @@ export class TaskController {
   async getById(req: Request, res: Response) {
     const id = req.params.id as string;
 
-    const task = await service.findById(id);
+    const user = req.user!;
+
+    const task = await service.findById(id, user.id, user.role);
 
     res.status(200).json({
       success: true,

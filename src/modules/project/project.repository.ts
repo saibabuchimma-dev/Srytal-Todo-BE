@@ -117,8 +117,13 @@ export class ProjectRepository {
   }
 
   async myProjects(employeeId: string) {
+    const projectIds = await Task.find({
+      assignedTo: employeeId,
+      project: { $ne: null },
+    }).distinct("project");
+
     return Project.find({
-      members: employeeId,
+      _id: { $in: projectIds },
     })
       .populate("members", "fullName email role avatar")
       .populate("createdBy", "fullName email")
