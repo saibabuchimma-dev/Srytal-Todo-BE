@@ -302,7 +302,8 @@ router.put(
 router.patch(
   "/:id/status",
   authMiddleware,
-  authorize("Employee"),
+  authorize("Admin","Employee"),
+  forcePasswordChange,
   controller.updateStatus.bind(controller),
 );
 

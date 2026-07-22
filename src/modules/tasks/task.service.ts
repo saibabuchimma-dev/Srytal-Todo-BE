@@ -1,7 +1,12 @@
 import { ApiError } from "@/utils/ApiError";
 import { EmployeeRepository } from "../employee/employee.repository";
 import { TaskRepository } from "./task.repository";
-import { CreateTaskDto, SearchTaskDto, UpdateTaskDto } from "./task.types";
+import {
+  CreateTaskDto,
+  SearchTaskDto,
+  UpdateTaskDto,
+  updateTaskStatusSchema,
+} from "./task.types";
 import { EmployeeService } from "../employee/employee.service";
 import { ProjectRepository } from "../project/project.repository";
 
@@ -43,29 +48,11 @@ export class TaskService {
     return repository.findAll();
   }
 
-  async findById(id: string, userId: string, role: string) {
+  async findById(id: string) {
     const task = await repository.findById(id);
 
     if (!task) {
       throw new ApiError(404, "Task not found");
-    }
-
-    if (role === "Admin") {
-      return task;
-    }
-
-    const assignedEmployeeId =
-      task.assignedTo &&
-      typeof task.assignedTo === "object" &&
-      "_id" in task.assignedTo
-        ? String((task.assignedTo as any)._id)
-        : String(task.assignedTo);
-
-    if (assignedEmployeeId !== userId) {
-      throw new ApiError(
-        403,
-        "You do not have permission to access this resource.",
-      );
     }
 
     return task;
@@ -167,19 +154,39 @@ export class TaskService {
     return repository.findByEmployee(employeeId);
   }
 
-  async updateStatus(taskId: string, employeeId: string, status: string) {
-    const task = await repository.findById(taskId);
+async updateStatus(
+  taskId: string,
+  userId: string,
+  role: "Admin" | "Employee",
+  status: string,
+) {
+  const parsed = updateTaskStatusSchema.safeParse({ status });
 
-    if (!task) {
-      throw new ApiError(404, "Task not found");
-    }
-
-    if (task.assignedTo && task.assignedTo.toString() !== employeeId) {
-      throw new ApiError(403, "This task is not assigned to you.");
-    }
-
-    return repository.updateStatus(taskId, status);
+  if (!parsed.success) {
+    throw new ApiError(400, "Invalid task status");
   }
+
+  const task = await repository.findById(taskId);
+
+  if (!task) {
+    throw new ApiError(404, "Task not found");
+  }
+
+  const assignedTo = task.assignedTo as { _id?: unknown } | null;
+
+  const assignedToId =
+    assignedTo && typeof assignedTo === "object" && "_id" in assignedTo
+      ? String(assignedTo._id)
+      : assignedTo
+        ? String(assignedTo)
+        : null;
+
+  if (role !== "Admin" && assignedToId && assignedToId !== userId) {
+    throw new ApiError(403, "This task is not assigned to you.");
+  }
+
+  return repository.updateStatus(taskId, parsed.data.status);
+}
 
   async count() {
     return repository.count();

@@ -207,6 +207,7 @@ export class TaskRepository {
       .populate("project", "name status");
   }
 
+
   async count() {
     return Task.countDocuments();
   }
