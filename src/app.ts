@@ -1,3 +1,4 @@
+import path from "path";
 import compression from "compression";
 import cookieParser from "cookie-parser";
 import cors from "cors";
@@ -25,6 +26,9 @@ app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
+
 setupSwagger(app);
 
 app.get("/health", (_req, res) => {
