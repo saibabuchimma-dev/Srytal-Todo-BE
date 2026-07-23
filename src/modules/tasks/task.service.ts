@@ -10,12 +10,14 @@ import {
 import { EmployeeService } from "../employee/employee.service";
 import { ProjectRepository } from "../project/project.repository";
 import { NotificationService } from "../notification/notification.service";
+import { ActivityService } from "../activity/activity.service";
 
 const repository = new TaskRepository();
 const employeeRepository = new EmployeeRepository();
 const employeeService = new EmployeeService();
 const projectRepository = new ProjectRepository();
 const notificationService = new NotificationService();
+const activityService = new ActivityService();
 
 function resolveId(ref: unknown): string | null {
   if (ref && typeof ref === "object" && "_id" in ref) {
@@ -51,7 +53,21 @@ export class TaskService {
       await projectRepository.addMember(data.project, data.assignedTo);
     }
 
+    await activityService.record({
+      task: String(task._id),
+      actor: createdBy,
+      type: "TASK_CREATED",
+      message: "created this task",
+    });
+
     if (data.assignedTo && data.assignedTo.trim() !== "") {
+      await activityService.record({
+        task: String(task._id),
+        actor: createdBy,
+        type: "ASSIGNED",
+        message: "assigned this task",
+      });
+
       await notificationService.notify({
         recipient: data.assignedTo,
         actor: createdBy,
@@ -109,6 +125,12 @@ export class TaskService {
       data.assignedTo.trim() !== "" &&
       data.assignedTo !== previousAssignee
     ) {
+      await activityService.record({
+        task: id,
+        type: "ASSIGNED",
+        message: "reassigned this task",
+      });
+
       await notificationService.notify({
         recipient: data.assignedTo,
         type: "TASK_ASSIGNED",
@@ -214,7 +236,15 @@ export class TaskService {
       throw new ApiError(403, "This task is not assigned to you.");
     }
 
+    const previousStatus = task.status;
     const updated = await repository.updateStatus(taskId, parsed.data.status);
+
+    await activityService.record({
+      task: taskId,
+      actor: userId,
+      type: "STATUS_CHANGED",
+      message: `changed status from ${previousStatus} to ${parsed.data.status}`,
+    });
 
     const recipients = new Set<string>();
     const creatorId = resolveId(task.createdBy);

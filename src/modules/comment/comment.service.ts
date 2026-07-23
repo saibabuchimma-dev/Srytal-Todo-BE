@@ -3,10 +3,12 @@ import { CommentRepository } from "./comment.repository";
 import { TaskRepository } from "../tasks/task.repository";
 import { createCommentSchema, updateCommentSchema } from "./comment.types";
 import { NotificationService } from "../notification/notification.service";
+import { ActivityService } from "../activity/activity.service";
 
 const repository = new CommentRepository();
 const taskRepository = new TaskRepository();
 const notificationService = new NotificationService();
+const activityService = new ActivityService();
 
 function resolveId(ref: unknown): string | null {
   if (ref && typeof ref === "object" && "_id" in ref) {
@@ -46,7 +48,14 @@ export class CommentService {
       content: parsed.data.content,
     });
 
-    // Notify the task's assignee and creator
+    await activityService.record({
+      task: taskId,
+      actor: authorId,
+      type: "COMMENT_ADDED",
+      message: "added a comment",
+    });
+
+    // Notify the task's assignee and creator (except whoever wrote the comment).
     const recipients = new Set<string>();
     const assigneeId = resolveId(task.assignedTo);
     const creatorId = resolveId(task.createdBy);
