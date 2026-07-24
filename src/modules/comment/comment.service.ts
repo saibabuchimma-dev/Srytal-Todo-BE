@@ -48,6 +48,8 @@ export class CommentService {
       content: parsed.data.content,
     });
 
+    const title = (task as { title?: string }).title ?? "the task";
+
     await activityService.record({
       task: taskId,
       actor: authorId,
@@ -55,21 +57,16 @@ export class CommentService {
       message: "added a comment",
     });
 
-    // Notify the task's assignee and creator (except whoever wrote the comment).
-    const recipients = new Set<string>();
-    const assigneeId = resolveId(task.assignedTo);
-    const creatorId = resolveId(task.createdBy);
+    const recipients = [resolveId(task.assignedTo), resolveId(task.createdBy)].filter(
+      (id): id is string => !!id && id !== authorId,
+    );
 
-    if (assigneeId) recipients.add(assigneeId);
-    if (creatorId) recipients.add(creatorId);
-    recipients.delete(authorId);
-
-    for (const recipient of recipients) {
+    for (const recipient of [...new Set(recipients)]) {
       await notificationService.notify({
         recipient,
         actor: authorId,
         type: "COMMENT_ADDED",
-        message: `New comment on task "${task.title}"`,
+        message: `New comment on "${title}"`,
         task: taskId,
       });
     }
