@@ -3,10 +3,12 @@ import { CommentRepository } from "./comment.repository";
 import { TaskRepository } from "../tasks/task.repository";
 import { createCommentSchema, updateCommentSchema } from "./comment.types";
 import { NotificationService } from "../notification/notification.service";
+import { ActivityService } from "../activity/activity.service";
 
 const repository = new CommentRepository();
 const taskRepository = new TaskRepository();
 const notificationService = new NotificationService();
+const activityService = new ActivityService();
 
 function resolveId(ref: unknown): string | null {
   if (ref && typeof ref === "object" && "_id" in ref) {
@@ -46,21 +48,25 @@ export class CommentService {
       content: parsed.data.content,
     });
 
-    // Notify the task's assignee and creator
-    const recipients = new Set<string>();
-    const assigneeId = resolveId(task.assignedTo);
-    const creatorId = resolveId(task.createdBy);
+    const title = (task as { title?: string }).title ?? "the task";
 
-    if (assigneeId) recipients.add(assigneeId);
-    if (creatorId) recipients.add(creatorId);
-    recipients.delete(authorId);
+    await activityService.record({
+      task: taskId,
+      actor: authorId,
+      type: "COMMENT_ADDED",
+      message: "added a comment",
+    });
 
-    for (const recipient of recipients) {
+    const recipients = [resolveId(task.assignedTo), resolveId(task.createdBy)].filter(
+      (id): id is string => !!id && id !== authorId,
+    );
+
+    for (const recipient of [...new Set(recipients)]) {
       await notificationService.notify({
         recipient,
         actor: authorId,
         type: "COMMENT_ADDED",
-        message: `New comment on task "${task.title}"`,
+        message: `New comment on "${title}"`,
         task: taskId,
       });
     }

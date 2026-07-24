@@ -10,18 +10,19 @@ import {
 import { EmployeeService } from "../employee/employee.service";
 import { ProjectRepository } from "../project/project.repository";
 import { NotificationService } from "../notification/notification.service";
+import { ActivityService } from "../activity/activity.service";
 
 const repository = new TaskRepository();
 const employeeRepository = new EmployeeRepository();
 const employeeService = new EmployeeService();
 const projectRepository = new ProjectRepository();
 const notificationService = new NotificationService();
+const activityService = new ActivityService();
 
 function resolveId(ref: unknown): string | null {
   if (ref && typeof ref === "object" && "_id" in ref) {
     return String((ref as { _id: unknown })._id);
   }
-
   return ref ? String(ref) : null;
 }
 
@@ -51,13 +52,29 @@ export class TaskService {
       await projectRepository.addMember(data.project, data.assignedTo);
     }
 
-    if (data.assignedTo && data.assignedTo.trim() !== "") {
+    const newTaskId = String(task._id);
+
+    await activityService.record({
+      task: newTaskId,
+      actor: createdBy,
+      type: "TASK_CREATED",
+      message: "created this task",
+    });
+
+    if (data.assignedTo) {
+      await activityService.record({
+        task: newTaskId,
+        actor: createdBy,
+        type: "ASSIGNED",
+        message: "assigned this task",
+      });
+
       await notificationService.notify({
         recipient: data.assignedTo,
         actor: createdBy,
         type: "TASK_ASSIGNED",
-        message: `You were assigned the task "${task.title}"`,
-        task: String(task._id),
+        message: `You were assigned to "${task.title}"`,
+        task: newTaskId,
       });
     }
 
@@ -78,7 +95,7 @@ export class TaskService {
     return task;
   }
 
-  async update(id: string, data: Partial<UpdateTaskDto>) {
+  async update(id: string, data: Partial<UpdateTaskDto>, actorId?: string) {
     const task = await repository.findById(id);
 
     if (!task) {
@@ -104,17 +121,23 @@ export class TaskService {
     const previousAssignee = resolveId(task.assignedTo);
     const updated = await repository.update(id, data);
 
-    if (
-      data.assignedTo &&
-      data.assignedTo.trim() !== "" &&
-      data.assignedTo !== previousAssignee
-    ) {
-      await notificationService.notify({
-        recipient: data.assignedTo,
-        type: "TASK_ASSIGNED",
-        message: `You were assigned the task "${updated?.title ?? task.title}"`,
+    if (data.assignedTo && data.assignedTo.trim() !== "" && data.assignedTo !== previousAssignee) {
+      await activityService.record({
         task: id,
+        actor: actorId ?? null,
+        type: "ASSIGNED",
+        message: "assigned this task",
       });
+
+      if (actorId !== data.assignedTo) {
+        await notificationService.notify({
+          recipient: data.assignedTo,
+          actor: actorId ?? null,
+          type: "TASK_ASSIGNED",
+          message: `You were assigned to "${(task as { title?: string }).title ?? "a task"}"`,
+          task: id,
+        });
+      }
     }
 
     return updated;
@@ -190,52 +213,64 @@ export class TaskService {
     return repository.findByEmployee(employeeId);
   }
 
-  async updateStatus(
-    taskId: string,
-    userId: string,
-    role: "Admin" | "Employee",
-    status: string,
-  ) {
-    const parsed = updateTaskStatusSchema.safeParse({ status });
+async updateStatus(
+  taskId: string,
+  userId: string,
+  role: "Admin" | "Employee",
+  status: string,
+) {
+  const parsed = updateTaskStatusSchema.safeParse({ status });
 
-    if (!parsed.success) {
-      throw new ApiError(400, "Invalid task status");
-    }
-
-    const task = await repository.findById(taskId);
-
-    if (!task) {
-      throw new ApiError(404, "Task not found");
-    }
-
-    const assignedToId = resolveId(task.assignedTo);
-
-    if (role !== "Admin" && assignedToId && assignedToId !== userId) {
-      throw new ApiError(403, "This task is not assigned to you.");
-    }
-
-    const updated = await repository.updateStatus(taskId, parsed.data.status);
-
-    const recipients = new Set<string>();
-    const creatorId = resolveId(task.createdBy);
-    const assigneeId = resolveId(task.assignedTo);
-
-    if (creatorId) recipients.add(creatorId);
-    if (assigneeId) recipients.add(assigneeId);
-    recipients.delete(userId);
-
-    for (const recipient of recipients) {
-      await notificationService.notify({
-        recipient,
-        actor: userId,
-        type: "TASK_STATUS",
-        message: `Task "${task.title}" was moved to ${parsed.data.status}`,
-        task: taskId,
-      });
-    }
-
-    return updated;
+  if (!parsed.success) {
+    throw new ApiError(400, "Invalid task status");
   }
+
+  const task = await repository.findById(taskId);
+
+  if (!task) {
+    throw new ApiError(404, "Task not found");
+  }
+
+  const assignedRef: unknown = task.assignedTo;
+  const assignedId =
+    assignedRef && typeof assignedRef === "object" && "_id" in assignedRef
+      ? String((assignedRef as { _id: unknown })._id)
+      : assignedRef
+        ? String(assignedRef)
+        : null;
+
+  if (role !== "Admin" && assignedId && assignedId !== userId) {
+    throw new ApiError(403, "This task is not assigned to you.");
+  }
+
+  const updated = await repository.updateStatus(taskId, parsed.data.status);
+
+  const title = (task as { title?: string }).title ?? "the task";
+  const createdById = resolveId(task.createdBy);
+
+  await activityService.record({
+    task: taskId,
+    actor: userId,
+    type: "STATUS_CHANGED",
+    message: `changed the status to ${parsed.data.status}`,
+  });
+
+  const recipients = [assignedId, createdById].filter(
+    (id): id is string => !!id && id !== userId,
+  );
+
+  for (const recipient of [...new Set(recipients)]) {
+    await notificationService.notify({
+      recipient,
+      actor: userId,
+      type: "TASK_STATUS",
+      message: `"${title}" was moved to ${parsed.data.status}`,
+      task: taskId,
+    });
+  }
+
+  return updated;
+}
 
   async count() {
     return repository.count();

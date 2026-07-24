@@ -146,6 +146,7 @@ router.get(
 router.get(
   "/search",
   authMiddleware,
+  authorize("Admin"),
   forcePasswordChange,
   controller.search.bind(controller),
 );
@@ -167,7 +168,12 @@ router.get(
  *       403:
  *         description: Forbidden
  */
-router.get("/dashboard", authMiddleware, controller.dashboard.bind(controller));
+router.get(
+  "/dashboard",
+  authMiddleware,
+  authorize("Admin"),
+  controller.dashboard.bind(controller),
+);
 
 /**
  * @swagger
@@ -201,7 +207,12 @@ router.get(
  *       200:
  *         description: Total number of tasks
  */
-router.get("/count", authMiddleware, controller.count.bind(controller));
+router.get(
+  "/count",
+  authMiddleware,
+  authorize("Admin"),
+  controller.count.bind(controller),
+);
 
 /**
  * @swagger

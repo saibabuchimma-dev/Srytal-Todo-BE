@@ -163,6 +163,8 @@ router.patch(
 
 router.get("/me", authMiddleware, controller.me.bind(controller));
 
+router.patch("/me", authMiddleware, controller.updateMe.bind(controller));
+
 /**
  * @swagger
  * /employees/{id}:
