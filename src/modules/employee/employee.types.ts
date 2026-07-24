@@ -16,6 +16,15 @@ export const createEmployeeSchema = z.object({
 
 export const updateEmployeeSchema = createEmployeeSchema.partial();
 
+export const updateMeSchema = z.object({
+  fullName: z
+    .string()
+    .trim()
+    .min(3, "Full name must be at least 3 characters")
+    .optional(),
+  avatar: z.string().trim().optional(),
+});
+
 export const changePasswordSchema = z.object({
   currentPassword: z.string().min(6, "Current password is required"),
 
@@ -35,6 +44,8 @@ export const searchEmployeeSchema = z.object({
 export type CreateEmployeeDto = z.infer<typeof createEmployeeSchema>;
 
 export type UpdateEmployeeDto = z.infer<typeof updateEmployeeSchema>;
+
+export type UpdateMeDto = z.infer<typeof updateMeSchema>;
 
 export type ChangePasswordDto = z.infer<typeof changePasswordSchema>;
 

@@ -1,11 +1,26 @@
 import { Request, Response } from "express";
+import { ApiError } from "@/utils/ApiError";
 import { EmployeeService } from "./employee.service";
+import {
+  createEmployeeSchema,
+  updateEmployeeSchema,
+  updateMeSchema,
+} from "./employee.types";
 
 const service = new EmployeeService();
 
 export class EmployeeController {
   async create(req: Request, res: Response) {
-    const { employee } = await service.create(req.body);
+    const parsed = createEmployeeSchema.safeParse(req.body);
+
+    if (!parsed.success) {
+      throw new ApiError(
+        400,
+        parsed.error.issues[0]?.message ?? "Invalid employee data",
+      );
+    }
+
+    const { employee } = await service.create(parsed.data);
 
     res.status(201).json({
       success: true,
@@ -38,7 +53,16 @@ export class EmployeeController {
   async update(req: Request, res: Response) {
     const id = req.params.id as string;
 
-    const employee = await service.update(id, req.body);
+    const parsed = updateEmployeeSchema.safeParse(req.body);
+
+    if (!parsed.success) {
+      throw new ApiError(
+        400,
+        parsed.error.issues[0]?.message ?? "Invalid employee data",
+      );
+    }
+
+    const employee = await service.update(id, parsed.data);
 
     res.status(200).json({
       success: true,
@@ -94,6 +118,25 @@ export class EmployeeController {
 
     res.status(200).json({
       success: true,
+      data: employee,
+    });
+  }
+
+  async updateMe(req: Request, res: Response) {
+    const parsed = updateMeSchema.safeParse(req.body);
+
+    if (!parsed.success) {
+      throw new ApiError(
+        400,
+        parsed.error.issues[0]?.message ?? "Invalid profile data",
+      );
+    }
+
+    const employee = await service.update(req.user!.id, parsed.data);
+
+    res.status(200).json({
+      success: true,
+      message: "Profile updated successfully",
       data: employee,
     });
   }
