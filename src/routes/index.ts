@@ -7,6 +7,7 @@ import commentsRoutes from "@/modules/comment/comment.routes";
 import attachmentsRoutes from "@/modules/attachment/attachment.routes";
 import notificationsRoutes from "@/modules/notification/notification.routes";
 import activitiesRoutes from "@/modules/activity/activity.routes";
+import reportsRoutes from "@/modules/report/report.routes";
 
 const router = Router();
 
@@ -18,4 +19,5 @@ router.use("/comments", commentsRoutes);
 router.use("/attachments", attachmentsRoutes);
 router.use("/notifications", notificationsRoutes);
 router.use("/activities", activitiesRoutes);
+router.use("/reports", reportsRoutes);
 export default router;

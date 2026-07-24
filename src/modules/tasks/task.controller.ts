@@ -42,7 +42,7 @@ export class TaskController {
   async update(req: Request, res: Response) {
     const id = req.params.id as string;
 
-    const task = await service.update(id, req.body);
+    const task = await service.update(id, req.body, req.user!.id);
 
     res.status(200).json({
       success: true,
