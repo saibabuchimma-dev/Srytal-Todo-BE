@@ -4,16 +4,18 @@ import cors from "cors";
 import express from "express";
 import helmet from "helmet";
 import morgan from "morgan";
+import path from "path";
 import routes from "./routes";
-import { errorMiddleware } from "./middleware/error.middleware";
-import { notFound } from "./middleware/not-found.middleware";
+import { errorMiddleware } from "./middlewares/errorMiddleware";
+import { notFound } from "./middlewares/notFoundMiddleware";
 import { setupSwagger } from "./config/swagger";
+import { config } from "./config";
 
 const app = express();
 
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: config.corsOrigins,
     credentials: true,
   }),
 );
@@ -25,6 +27,8 @@ app.use(express.json({ limit: "2mb" }));
 app.use(express.urlencoded({ extended: true, limit: "2mb" }));
 app.use(cookieParser());
 setupSwagger(app);
+
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 app.get("/health", (_req, res) => {
   res.status(200).json({

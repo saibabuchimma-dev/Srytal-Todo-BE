@@ -251,7 +251,7 @@ const options: swaggerJsdoc.Options = {
 
             status: {
               type: "string",
-              enum: ["Planning", "Active", "Completed", "On Hold"],
+              enum: ["Planning", "In Progress", "Completed"],
               example: "Planning",
             },
 
@@ -276,6 +276,69 @@ const options: swaggerJsdoc.Options = {
             },
           },
         },
+
+        LoginResponse: {
+          type: "object",
+          properties: {
+            success: {
+              type: "boolean",
+              example: true,
+            },
+            message: {
+              type: "string",
+              example: "Login Successful",
+            },
+            data: {
+              type: "object",
+              properties: {
+                accessToken: {
+                  type: "string",
+                  example: "eyJhbGc...",
+                },
+                refreshToken: {
+                  type: "string",
+                  example: "eyJhbGc...",
+                },
+                mustChangePassword: {
+                  type: "boolean",
+                  example: false,
+                },
+                user: {
+                  type: "object",
+                  properties: {
+                    id: {
+                      type: "string",
+                    },
+                    fullName: {
+                      type: "string",
+                    },
+                    email: {
+                      type: "string",
+                    },
+                    role: {
+                      type: "string",
+                      enum: ["Admin", "Employee"],
+                    },
+                    mustChangePassword: {
+                      type: "boolean",
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+
+        RefreshRequest: {
+          type: "object",
+          required: ["refreshToken"],
+          properties: {
+            refreshToken: {
+              type: "string",
+              example: "eyJhbGc...",
+            },
+          },
+        },
       },
     },
 
@@ -286,7 +349,7 @@ const options: swaggerJsdoc.Options = {
     ],
   },
 
-  apis: ["./src/modules/**/*.routes.ts"],
+  apis: ["./src/routes/*Routes.ts"],
 };
 
 const swaggerSpec = swaggerJsdoc(options);

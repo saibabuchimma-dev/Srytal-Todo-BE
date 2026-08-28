@@ -2,12 +2,14 @@ interface WelcomeEmployeeEmailProps {
   fullName: string;
   email: string;
   temporaryPassword: string;
+  loginUrl: string;
 }
 
 export function welcomeEmployeeTemplate({
   fullName,
   email,
   temporaryPassword,
+  loginUrl,
 }: WelcomeEmployeeEmailProps) {
   return `
 <!DOCTYPE html>
@@ -74,7 +76,7 @@ style="background:#ffffff;border:1px solid #dddddd;border-radius:8px;overflow:hi
             This is a temporary password. For security reasons, please change your password after your first login. Never share your login credentials with anyone.            
             </div>
             <div style="text-align:center;margin:32px 0;">
-              <a href="http://localhost:5174/login"
+              <a href="${loginUrl}"
                  style="background:#0d6efd;color:#ffffff;text-decoration:none;padding:12px 25px;border-radius:7px;font-weight:bold;display:inline-block;">
                 Access Employee Portal
               </a>

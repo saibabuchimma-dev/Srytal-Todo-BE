@@ -45,11 +45,9 @@ async function seedAdmin() {
     } else {
       console.log("✅ Admin updated successfully");
     }
-
-    process.exit(0);
   } catch (error) {
     console.error(error);
-    process.exit(1);
+    process.exitCode = 1;
   } finally {
     await mongoose.disconnect();
   }
