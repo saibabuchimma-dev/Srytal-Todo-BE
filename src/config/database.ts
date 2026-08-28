@@ -1,9 +1,18 @@
 import mongoose from "mongoose";
-import { env } from "./env";
+import "dotenv/config";
+
+function normalizeMongoUri(value: string | undefined): string {
+  if (!value) return "";
+
+  return value
+    .trim()
+    .replace(/^['"]+|['"]+$/g, "")
+    .replace(/^MONGO_URI\s*=\s*/i, "");
+}
 
 export async function connectDatabase() {
   try {
-    await mongoose.connect(env.MONGO_URI);
+    await mongoose.connect(normalizeMongoUri(process.env.MONGO_URI));
 
     console.log("✅ MongoDB Connected");
   } catch (error) {

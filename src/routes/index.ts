@@ -1,13 +1,13 @@
 import { Router } from "express";
-import authRoutes from "@/modules/auth/auth.routes";
-import employeeRoutes from "@/modules/employee/employee.routes";
-import tasksRoutes from "@/modules/tasks/task.routes";
-import projectsRoutes from "@/modules/project/project.routes";
-import commentsRoutes from "@/modules/comment/comment.routes";
-import attachmentsRoutes from "@/modules/attachment/attachment.routes";
-import notificationsRoutes from "@/modules/notification/notification.routes";
-import activitiesRoutes from "@/modules/activity/activity.routes";
-import reportsRoutes from "@/modules/report/report.routes";
+import authRoutes from "@/routes/authRoutes";
+import employeeRoutes from "@/routes/employeeRoutes";
+import tasksRoutes from "@/routes/taskRoutes";
+import projectsRoutes from "@/routes/projectRoutes";
+import commentsRoutes from "@/routes/commentRoutes";
+import attachmentsRoutes from "@/routes/attachmentRoutes";
+import notificationsRoutes from "@/routes/notificationRoutes";
+import activitiesRoutes from "@/routes/activityRoutes";
+import reportsRoutes from "@/routes/reportRoutes";
 
 const router = Router();
 

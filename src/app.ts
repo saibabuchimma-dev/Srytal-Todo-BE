@@ -6,16 +6,16 @@ import helmet from "helmet";
 import morgan from "morgan";
 import path from "path";
 import routes from "./routes";
-import { errorMiddleware } from "./middleware/error.middleware";
-import { notFound } from "./middleware/not-found.middleware";
+import { errorMiddleware } from "./middlewares/errorMiddleware";
+import { notFound } from "./middlewares/notFoundMiddleware";
 import { setupSwagger } from "./config/swagger";
-import { env } from "./config/env";
+import { config } from "./config";
 
 const app = express();
 
 app.use(
   cors({
-    origin: env.CORS_ORIGINS,
+    origin: config.corsOrigins,
     credentials: true,
   }),
 );
