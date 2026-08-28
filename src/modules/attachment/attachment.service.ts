@@ -58,10 +58,12 @@ export class AttachmentService {
       throw new ApiError(403, "You can only delete your own attachment.");
     }
 
-    await fs.promises
-      .unlink(path.join(UPLOAD_DIR, attachment.fileName))
-      .catch(() => undefined);
+    const fileName = attachment.fileName;
 
     await repository.delete(attachmentId);
+
+    await fs.promises
+      .unlink(path.join(UPLOAD_DIR, fileName))
+      .catch(() => undefined);
   }
 }

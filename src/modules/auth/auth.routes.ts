@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { login } from "./auth.controller";
+import { login, logout, refresh } from "./auth.controller";
 
 const router = Router();
 
@@ -54,7 +54,8 @@ const router = Router();
  *                   success: true
  *                   message: Login Successful
  *                   data:
- *                     token: eyJhbGc...
+ *                     accessToken: eyJhbGc...
+ *                     refreshToken: eyJhbGc...
  *                     user:
  *                       id: 686523c5b65cde66f9831d18
  *                       fullName: SRYTAL Admin
@@ -68,7 +69,8 @@ const router = Router();
  *                   success: true
  *                   message: Login Successful
  *                   data:
- *                     token: eyJhbGc...
+ *                     accessToken: eyJhbGc...
+ *                     refreshToken: eyJhbGc...
  *                     user:
  *                       id: 686523c5b65cde66f9831d25
  *                       fullName: John Doe
@@ -82,7 +84,8 @@ const router = Router();
  *                   success: true
  *                   message: Login Successful
  *                   data:
- *                     token: eyJhbGc...
+ *                     accessToken: eyJhbGc...
+ *                     refreshToken: eyJhbGc...
  *                     user:
  *                       id: 686523c5b65cde66f9831d25
  *                       fullName: John Doe
@@ -95,5 +98,79 @@ const router = Router();
  */
 
 router.post("/login", login);
+
+/**
+ * @swagger
+ * /auth/refresh:
+ *   post:
+ *     summary: Refresh Access Token
+ *     description: Exchange a valid refresh token for a new access + refresh token pair.
+ *     tags:
+ *       - Auth
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - refreshToken
+ *             properties:
+ *               refreshToken:
+ *                 type: string
+ *                 example: eyJhbGc...
+ *     responses:
+ *       200:
+ *         description: New token pair issued
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Token refreshed successfully
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     accessToken:
+ *                       type: string
+ *                     refreshToken:
+ *                       type: string
+ *                     user:
+ *                       type: object
+ *       401:
+ *         description: Invalid or expired refresh token
+ */
+router.post("/refresh", refresh);
+
+/**
+ * @swagger
+ * /auth/logout:
+ *   post:
+ *     summary: Logout
+ *     description: Revokes the provided refresh token.
+ *     tags:
+ *       - Auth
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - refreshToken
+ *             properties:
+ *               refreshToken:
+ *                 type: string
+ *                 example: eyJhbGc...
+ *     responses:
+ *       200:
+ *         description: Logged out successfully
+ */
+router.post("/logout", logout);
 
 export default router;

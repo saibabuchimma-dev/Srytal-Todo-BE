@@ -239,7 +239,7 @@ async updateStatus(
         ? String(assignedRef)
         : null;
 
-  if (role !== "Admin" && assignedId && assignedId !== userId) {
+  if (role !== "Admin" && assignedId !== userId) {
     throw new ApiError(403, "This task is not assigned to you.");
   }
 

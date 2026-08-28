@@ -149,7 +149,18 @@ export class ProjectRepository {
         createdAt: -1,
       });
 
-    const employeeMap = new Map();
+    interface EmployeeBrief {
+      _id: unknown;
+      fullName: string;
+      email: string;
+      role: string;
+    }
+
+    const employeeMap = new Map<string, {
+      employee: EmployeeBrief;
+      taskCount: number;
+      tasks: typeof tasks;
+    }>();
 
     let pending = 0;
     let completed = 0;
@@ -162,17 +173,18 @@ export class ProjectRepository {
 
       if (!task.assignedTo) continue;
 
-      const employee = task.assignedTo as any;
+      const employee = task.assignedTo as unknown as EmployeeBrief;
+      const employeeKey = String(employee._id);
 
-      if (!employeeMap.has(employee._id.toString())) {
-        employeeMap.set(employee._id.toString(), {
+      if (!employeeMap.has(employeeKey)) {
+        employeeMap.set(employeeKey, {
           employee,
           taskCount: 0,
           tasks: [],
         });
       }
 
-      const item = employeeMap.get(employee._id.toString());
+      const item = employeeMap.get(employeeKey)!;
 
       item.taskCount++;
       item.tasks.push(task);

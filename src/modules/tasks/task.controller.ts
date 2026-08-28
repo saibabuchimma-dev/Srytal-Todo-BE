@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import { TaskService } from "./task.service";
-import { Task } from "./task.model";
 
 const service = new TaskService();
 
@@ -129,71 +128,5 @@ export class TaskController {
         totalTasks: total,
       },
     });
-  }
-
-  async findRecent(limit = 5) {
-    return Task.find()
-      .populate("assignedTo", "fullName email role avatar")
-      .populate("createdBy", "fullName email")
-      .sort({
-        createdAt: -1,
-      })
-      .limit(limit);
-  }
-
-  async countByStatus() {
-    const [pending, inProgress, completed] = await Promise.all([
-      Task.countDocuments({
-        status: "Pending",
-      }),
-
-      Task.countDocuments({
-        status: "In Progress",
-      }),
-
-      Task.countDocuments({
-        status: "Completed",
-      }),
-    ]);
-
-    return {
-      pending,
-      inProgress,
-      completed,
-    };
-  }
-
-  async countByPriority() {
-    const [high, medium, low] = await Promise.all([
-      Task.countDocuments({
-        priority: "High",
-      }),
-
-      Task.countDocuments({
-        priority: "Medium",
-      }),
-
-      Task.countDocuments({
-        priority: "Low",
-      }),
-    ]);
-
-    return {
-      high,
-      medium,
-      low,
-    };
-  }
-
-  async completionRate() {
-    const [total, completed] = await Promise.all([
-      Task.countDocuments(),
-
-      Task.countDocuments({
-        status: "Completed",
-      }),
-    ]);
-
-    return total === 0 ? 0 : Math.round((completed / total) * 100);
   }
 }

@@ -24,7 +24,16 @@ export function authMiddleware(
   try {
     const decoded = jwt.verify(token, env.JWT_SECRET) as JwtPayload;
 
-    req.user = decoded;
+    if (decoded.type !== "access") {
+      throw new Error("Invalid token type");
+    }
+
+    req.user = {
+      id: decoded.id,
+      fullName: decoded.fullName,
+      email: decoded.email,
+      role: decoded.role,
+    };
 
     next();
   } catch {

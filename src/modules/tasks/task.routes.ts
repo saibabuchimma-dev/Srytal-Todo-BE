@@ -18,44 +18,42 @@ const controller = new TaskController();
  * @swagger
  * components:
  *   schemas:
- CreateTask:
-  type: object
-  required:
-    - title
-    - dueDate
-  properties:
-    assignedTo:
-      type: string
-      nullable: true
-      example: 686523c5b65cde66f9831d18
-
-    project:
-      type: string
-      nullable: true
-      example: 68771234c5b65cde66f983555
-
-    title:
-      type: string
-      example: Design Login UI
-    description:
-      type: string
-      example: Create responsive login page
-    status:
-      type: string
-      enum:
-        - Pending
-        - In Progress
-        - Completed
-    priority:
-      type: string
-      enum:
-        - Low
-        - Medium
-        - High
-    dueDate:
-      type: string
-      format: date
-      example: 2026-07-10
+ *     CreateTask:
+ *       type: object
+ *       required:
+ *         - title
+ *         - dueDate
+ *       properties:
+ *         assignedTo:
+ *           type: string
+ *           nullable: true
+ *           example: 686523c5b65cde66f9831d18
+ *         project:
+ *           type: string
+ *           nullable: true
+ *           example: 68771234c5b65cde66f983555
+ *         title:
+ *           type: string
+ *           example: Design Login UI
+ *         description:
+ *           type: string
+ *           example: Create responsive login page
+ *         status:
+ *           type: string
+ *           enum:
+ *             - Pending
+ *             - In Progress
+ *             - Completed
+ *         priority:
+ *           type: string
+ *           enum:
+ *             - Low
+ *             - Medium
+ *             - High
+ *         dueDate:
+ *           type: string
+ *           format: date
+ *           example: 2026-07-10
  */
 
 /**
@@ -135,10 +133,10 @@ router.get(
  *         name: assignedTo
  *         schema:
  *           type: string
-*        - in: query
-            name: project
-            schema:
-              type: string
+ *       - in: query
+ *         name: project
+ *         schema:
+ *           type: string
  *     responses:
  *       200:
  *         description: Filtered task list

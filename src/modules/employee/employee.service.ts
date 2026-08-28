@@ -8,6 +8,8 @@ import {
 } from "./employee.types";
 import { welcomeEmployeeTemplate } from "@/templates/emails";
 import { MailService } from "../mail/mail.service";
+import { generatePassword } from "@/utils/generatePassword";
+import { env } from "@/config/env";
 
 const repository = new EmployeeRepository();
 const mailService = new MailService();
@@ -21,7 +23,7 @@ export class EmployeeService {
     }
 
     // Generate Temporary Password
-    const tempPassword = this.generateTempPassword();
+    const tempPassword = generatePassword();
 
     const hashedPassword = await bcrypt.hash(tempPassword, 10);
 
@@ -39,6 +41,7 @@ export class EmployeeService {
           fullName: employee.fullName,
           email: employee.email,
           temporaryPassword: tempPassword,
+          loginUrl: `${env.FRONTEND_URL}/login`,
         }),
       );
 
@@ -151,17 +154,5 @@ export class EmployeeService {
 
     const hashedPassword = await bcrypt.hash(data.newPassword, 10);
     await repository.updatePassword(employeeId, hashedPassword);
-  }
-
-  private generateTempPassword(length = 10): string {
-    const chars =
-      "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789@#$%";
-    let password = "";
-
-    for (let i = 0; i < length; i++) {
-      password += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-
-    return password;
   }
 }

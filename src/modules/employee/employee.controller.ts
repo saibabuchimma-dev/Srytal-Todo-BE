@@ -20,12 +20,17 @@ export class EmployeeController {
       );
     }
 
-    const { employee } = await service.create(parsed.data);
+    const { employee, tempPassword } = await service.create(parsed.data);
 
     res.status(201).json({
       success: true,
       message: "Employee created successfully",
-      data: employee,
+      data: {
+        ...employee,
+        credentials: {
+          tempPassword,
+        },
+      },
     });
   }
 
