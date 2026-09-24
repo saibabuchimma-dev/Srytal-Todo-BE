@@ -24,17 +24,17 @@ The REST API for the SRYTAL task-management system, built with **Express 5**, **
 
 ## 🧰 Tech Stack
 
-| Area | Technology |
-| --- | --- |
-| Runtime | Node.js, Express 5 |
-| Language | TypeScript (strict) |
-| Database | MongoDB + Mongoose |
-| Auth | JWT access + refresh tokens, bcrypt |
-| Validation | Zod |
-| Uploads | Multer |
-| Email | Nodemailer |
-| Docs | swagger-jsdoc, swagger-ui-express |
-| Security | Helmet, CORS, compression, Morgan |
+| Area       | Technology                          |
+| ---------- | ----------------------------------- |
+| Runtime    | Node.js, Express 5                  |
+| Language   | TypeScript (strict)                 |
+| Database   | MongoDB + Mongoose                  |
+| Auth       | JWT access + refresh tokens, bcrypt |
+| Validation | Zod                                 |
+| Uploads    | Multer                              |
+| Email      | Nodemailer                          |
+| Docs       | swagger-jsdoc, swagger-ui-express   |
+| Security   | Helmet, CORS, compression, Morgan   |
 
 ---
 
@@ -101,35 +101,35 @@ SMTP_USER=your-smtp-user
 SMTP_PASS=your-smtp-password
 ```
 
-| Variable | Description | Default |
-| --- | --- | --- |
-| `PORT` | Port the server listens on | `5000` |
-| `NODE_ENV` | Environment (`development` / `production`) | `development` |
-| `APP_URL` | Public base URL of the API | `http://localhost:5000` |
-| `FRONTEND_URL` | Public base URL of the React client (used in emails) | `http://localhost:5173` |
-| `CORS_ORIGINS` | Allowed origins (comma-separated) | `http://localhost:5173` |
-| `MONGO_URI` | MongoDB connection string | — (required) |
-| `JWT_SECRET` | Secret used to sign access tokens | — (required) |
-| `JWT_ACCESS_EXPIRES_IN` | Access token lifetime (e.g. `15m`) | `15m` |
-| `JWT_REFRESH_SECRET` | Secret used to sign refresh tokens | falls back to `JWT_SECRET` |
-| `JWT_REFRESH_EXPIRES_IN` | Refresh token lifetime (e.g. `7d`) | `7d` |
-| `MAIL_FROM` | Default "from" address for emails | — |
-| `SMTP_HOST` / `SMTP_PORT` | SMTP server host and port | — / `465` |
-| `SMTP_SECURE` | Use TLS (`true` for port 465) | — |
-| `SMTP_USER` / `SMTP_PASS` | SMTP credentials | — |
+| Variable                  | Description                                          | Default                    |
+| ------------------------- | ---------------------------------------------------- | -------------------------- |
+| `PORT`                    | Port the server listens on                           | `5000`                     |
+| `NODE_ENV`                | Environment (`development` / `production`)           | `development`              |
+| `APP_URL`                 | Public base URL of the API                           | `http://localhost:5000`    |
+| `FRONTEND_URL`            | Public base URL of the React client (used in emails) | `http://localhost:5173`    |
+| `CORS_ORIGINS`            | Allowed origins (comma-separated)                    | `http://localhost:5173`    |
+| `MONGO_URI`               | MongoDB connection string                            | — (required)               |
+| `JWT_SECRET`              | Secret used to sign access tokens                    | — (required)               |
+| `JWT_ACCESS_EXPIRES_IN`   | Access token lifetime (e.g. `15m`)                   | `15m`                      |
+| `JWT_REFRESH_SECRET`      | Secret used to sign refresh tokens                   | falls back to `JWT_SECRET` |
+| `JWT_REFRESH_EXPIRES_IN`  | Refresh token lifetime (e.g. `7d`)                   | `7d`                       |
+| `MAIL_FROM`               | Default "from" address for emails                    | —                          |
+| `SMTP_HOST` / `SMTP_PORT` | SMTP server host and port                            | — / `465`                  |
+| `SMTP_SECURE`             | Use TLS (`true` for port 465)                        | —                          |
+| `SMTP_USER` / `SMTP_PASS` | SMTP credentials                                     | —                          |
 
 ---
 
 ## 📜 Scripts
 
-| Script | Description |
-| --- | --- |
-| `npm run dev` | Start the API in watch mode (tsx) |
-| `npm run build` | Compile TypeScript to `dist/` |
-| `npm start` | Run the compiled server (`dist/server.js`) |
-| `npm run seed` | Seed the default admin user |
-| `npm run lint` | Run ESLint |
-| `npm run format` | Format the codebase with Prettier |
+| Script           | Description                                |
+| ---------------- | ------------------------------------------ |
+| `npm run dev`    | Start the API in watch mode (tsx)          |
+| `npm run build`  | Compile TypeScript to `dist/`              |
+| `npm start`      | Run the compiled server (`dist/server.js`) |
+| `npm run seed`   | Seed the default admin user                |
+| `npm run lint`   | Run ESLint                                 |
+| `npm run format` | Format the codebase with Prettier          |
 
 ### Default admin
 
@@ -146,11 +146,11 @@ SMTP_PASS=your-smtp-password
 
 Three endpoints under `/api/auth`:
 
-| Endpoint | Purpose |
-| --- | --- |
-| `POST /auth/login` | Authenticate and receive `{ accessToken, refreshToken, user, mustChangePassword }` |
+| Endpoint             | Purpose                                                                                               |
+| -------------------- | ----------------------------------------------------------------------------------------------------- |
+| `POST /auth/login`   | Authenticate and receive `{ accessToken, refreshToken, user, mustChangePassword }`                    |
 | `POST /auth/refresh` | Exchange a valid refresh token for a new access + refresh token pair (rotation revokes the old token) |
-| `POST /auth/logout` | Revoke a refresh token (`{ refreshToken }`) |
+| `POST /auth/logout`  | Revoke a refresh token (`{ refreshToken }`)                                                           |
 
 - Access tokens are short-lived (default `15m`) and carry a payload of `{ id, fullName, email, role, type: "access" }`. They are sent as `Authorization: Bearer <token>`.
 - Refresh tokens are long-lived (default `7d`), carry `type: "refresh"`, are **hashed (SHA-256)** and stored in the `AuthToken` collection, and can only be used against `/auth/refresh`.
@@ -162,17 +162,17 @@ Three endpoints under `/api/auth`:
 
 All routes are prefixed with `/api`. Protected routes require an `Authorization: Bearer <access-token>` header.
 
-| Resource | Base path | Key endpoints |
-| --- | --- | --- |
-| Auth | `/api/auth` | `POST /login`, `POST /refresh`, `POST /logout` |
-| Employees | `/api/employees` | `GET /`, `GET /search`, `GET /count`, `GET /me`, `PATCH /me`, `PATCH /change-password`, `GET /:id`, `POST /`, `PUT /:id`, `DELETE /:id` |
-| Tasks | `/api/tasks` | `GET /`, `GET /search`, `GET /my-tasks`, `GET /dashboard`, `GET /count`, `GET /:id`, `POST /`, `PUT /:id`, `PATCH /:id/status`, `DELETE /:id` |
-| Projects | `/api/projects` | `GET /`, `GET /search`, `GET /my-projects`, `GET /dashboard`, `GET /recent`, `GET /count`, `GET /:id`, `GET /:id/details`, `POST /`, `PUT /:id`, `PATCH /:id/members`, `DELETE /:id` |
-| Comments | `/api/comments` | `GET /task/:taskId`, `POST /task/:taskId`, `PATCH /:id`, `DELETE /:id` |
-| Attachments | `/api/attachments` | `GET /task/:taskId`, `POST /task/:taskId`, `DELETE /:id` |
-| Notifications | `/api/notifications` | `GET /`, `GET /unread-count`, `PATCH /:id/read`, `PATCH /read-all`, `DELETE /:id` |
-| Activities | `/api/activities` | `GET /task/:taskId` |
-| Reports | `/api/reports` | `GET /overview` |
+| Resource      | Base path            | Key endpoints                                                                                                                                                                        |
+| ------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Auth          | `/api/auth`          | `POST /login`, `POST /refresh`, `POST /logout`                                                                                                                                       |
+| Employees     | `/api/employees`     | `GET /`, `GET /search`, `GET /count`, `GET /me`, `PATCH /me`, `PATCH /change-password`, `GET /:id`, `POST /`, `PUT /:id`, `DELETE /:id`                                              |
+| Tasks         | `/api/tasks`         | `GET /`, `GET /search`, `GET /my-tasks`, `GET /dashboard`, `GET /count`, `GET /:id`, `POST /`, `PUT /:id`, `PATCH /:id/status`, `DELETE /:id`                                        |
+| Projects      | `/api/projects`      | `GET /`, `GET /search`, `GET /my-projects`, `GET /dashboard`, `GET /recent`, `GET /count`, `GET /:id`, `GET /:id/details`, `POST /`, `PUT /:id`, `PATCH /:id/members`, `DELETE /:id` |
+| Comments      | `/api/comments`      | `GET /task/:taskId`, `POST /task/:taskId`, `PATCH /:id`, `DELETE /:id`                                                                                                               |
+| Attachments   | `/api/attachments`   | `GET /task/:taskId`, `POST /task/:taskId`, `DELETE /:id`                                                                                                                             |
+| Notifications | `/api/notifications` | `GET /`, `GET /unread-count`, `PATCH /:id/read`, `PATCH /read-all`, `DELETE /:id`                                                                                                    |
+| Activities    | `/api/activities`    | `GET /task/:taskId`                                                                                                                                                                  |
+| Reports       | `/api/reports`       | `GET /overview`                                                                                                                                                                      |
 
 Full, always-up-to-date request/response schemas are available in the **Swagger UI at `/docs`**.
 

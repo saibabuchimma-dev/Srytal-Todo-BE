@@ -24,27 +24,23 @@ function toPayload(
   };
 }
 
-export function generateAccessToken(
-  user: {
-    id: string;
-    fullName: string;
-    email: string;
-    role: "Admin" | "Employee";
-  },
-): string {
+export function generateAccessToken(user: {
+  id: string;
+  fullName: string;
+  email: string;
+  role: "Admin" | "Employee";
+}): string {
   return jwt.sign(toPayload(user, "access"), accessSecret, {
     expiresIn: config.jwtAccessExpiresIn as SignOptions["expiresIn"],
   });
 }
 
-export function generateRefreshToken(
-  user: {
-    id: string;
-    fullName: string;
-    email: string;
-    role: "Admin" | "Employee";
-  },
-): string {
+export function generateRefreshToken(user: {
+  id: string;
+  fullName: string;
+  email: string;
+  role: "Admin" | "Employee";
+}): string {
   return jwt.sign(toPayload(user, "refresh"), refreshSecret, {
     expiresIn: config.jwtRefreshExpiresIn as SignOptions["expiresIn"],
   });

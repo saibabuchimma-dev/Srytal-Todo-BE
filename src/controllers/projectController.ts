@@ -68,10 +68,7 @@ export class ProjectController {
       limit: Number(req.query.limit ?? 10),
 
       status: req.query.status?.toString() as
-        | "Planning"
-        | "In Progress"
-        | "Completed"
-        | undefined,
+        "Planning" | "In Progress" | "Completed" | undefined,
     });
 
     res.status(200).json({

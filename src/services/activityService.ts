@@ -1,10 +1,7 @@
 import { Activity } from "@/models/Activity";
 
 export type ActivityType =
-  | "TASK_CREATED"
-  | "STATUS_CHANGED"
-  | "ASSIGNED"
-  | "COMMENT_ADDED";
+  "TASK_CREATED" | "STATUS_CHANGED" | "ASSIGNED" | "COMMENT_ADDED";
 
 export interface CreateActivityInput {
   task: string;
@@ -21,8 +18,8 @@ export class ActivityService {
       }
 
       await Activity.create(input);
-    } catch {
-      // swallow — activity logging is best-effort
+    } catch (_error) {
+      void _error;
     }
   }
 

@@ -67,15 +67,9 @@ export class TaskController {
       page: Number(req.query.page ?? 1),
       limit: Number(req.query.limit ?? 10),
       status: req.query.status?.toString() as
-        | "Pending"
-        | "In Progress"
-        | "Completed"
-        | undefined,
+        "Pending" | "In Progress" | "Completed" | undefined,
       priority: req.query.priority?.toString() as
-        | "Low"
-        | "Medium"
-        | "High"
-        | undefined,
+        "Low" | "Medium" | "High" | undefined,
       assignedTo: req.query.assignedTo?.toString(),
       project: req.query.project?.toString(),
     });

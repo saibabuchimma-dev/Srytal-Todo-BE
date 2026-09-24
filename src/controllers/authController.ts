@@ -2,10 +2,7 @@ import { Request, Response } from "express";
 import { asyncHandler } from "@/utils/asyncHandler";
 import { ApiError } from "@/utils/ApiError";
 import { AuthService } from "@/services/authService";
-import {
-  loginSchema,
-  refreshTokenSchema,
-} from "@/validations/authValidations";
+import { loginSchema, refreshTokenSchema } from "@/validations/authValidations";
 
 const service = new AuthService();
 

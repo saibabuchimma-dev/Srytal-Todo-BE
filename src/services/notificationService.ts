@@ -2,7 +2,8 @@ import mongoose from "mongoose";
 import { ApiError } from "@/utils/ApiError";
 import { Notification } from "@/models/Notification";
 
-export type NotificationType = "TASK_ASSIGNED" | "TASK_STATUS" | "COMMENT_ADDED";
+export type NotificationType =
+  "TASK_ASSIGNED" | "TASK_STATUS" | "COMMENT_ADDED";
 
 export interface CreateNotificationInput {
   recipient: string;
@@ -32,8 +33,8 @@ export class NotificationService {
       }
 
       await Notification.create(input);
-    } catch {
-      // swallow — notifications are best-effort
+    } catch (_error) {
+      void _error;
     }
   }
 
@@ -60,11 +61,7 @@ export class NotificationService {
       throw new ApiError(403, "This notification is not yours.");
     }
 
-    return Notification.findByIdAndUpdate(
-      id,
-      { isRead: true },
-      { new: true },
-    );
+    return Notification.findByIdAndUpdate(id, { isRead: true }, { new: true });
   }
 
   async markAllRead(userId: string) {

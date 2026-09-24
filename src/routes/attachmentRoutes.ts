@@ -31,11 +31,7 @@ const controller = new AttachmentController();
  *       200:
  *         description: Attachments for the task
  */
-router.get(
-  "/task/:taskId",
-  authMiddleware,
-  controller.list.bind(controller),
-);
+router.get("/task/:taskId", authMiddleware, controller.list.bind(controller));
 
 /**
  * @swagger
@@ -94,10 +90,6 @@ router.post(
  *       403:
  *         description: You can only delete your own attachment
  */
-router.delete(
-  "/:id",
-  authMiddleware,
-  controller.delete.bind(controller),
-);
+router.delete("/:id", authMiddleware, controller.delete.bind(controller));
 
 export default router;
