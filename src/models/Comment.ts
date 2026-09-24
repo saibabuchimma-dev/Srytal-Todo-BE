@@ -30,4 +30,7 @@ const commentSchema = new Schema(
 
 export type CommentDocument = InferSchemaType<typeof commentSchema>;
 
-export const Comment = mongoose.model<CommentDocument>("Comment", commentSchema);
+export const Comment = mongoose.model<CommentDocument>(
+  "Comment",
+  commentSchema,
+);

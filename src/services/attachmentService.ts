@@ -50,7 +50,11 @@ export class AttachmentService {
     return attachment.populate("uploadedBy", UPLOADER_FIELDS);
   }
 
-  async delete(attachmentId: string, userId: string, role: "Admin" | "Employee") {
+  async delete(
+    attachmentId: string,
+    userId: string,
+    role: "Admin" | "Employee",
+  ) {
     const attachment = await this.findById(attachmentId);
 
     if (!attachment) {

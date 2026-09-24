@@ -1,4 +1,3 @@
-import mongoose from "mongoose";
 import { ApiError } from "@/utils/ApiError";
 import { Employee } from "@/models/Employee";
 import { Task } from "@/models/Task";
@@ -132,7 +131,11 @@ export class TaskService {
       runValidators: true,
     }).populate(TASK_POPULATE);
 
-    if (data.assignedTo && data.assignedTo.trim() !== "" && data.assignedTo !== previousAssignee) {
+    if (
+      data.assignedTo &&
+      data.assignedTo.trim() !== "" &&
+      data.assignedTo !== previousAssignee
+    ) {
       await activityService.record({
         task: id,
         actor: actorId ?? null,
@@ -166,7 +169,15 @@ export class TaskService {
 
   async search(query: SearchTaskDto) {
     const filter: Record<string, unknown> = {};
-    const { search = "", page = 1, limit = 10, status, priority, assignedTo, project } = query;
+    const {
+      search = "",
+      page = 1,
+      limit = 10,
+      status,
+      priority,
+      assignedTo,
+      project,
+    } = query;
 
     if (search.trim()) {
       filter.$or = [
@@ -223,10 +234,7 @@ export class TaskService {
         return t === 0 ? 0 : Math.round((c / t) * 100);
       })(),
       employeeService.recentEmployees(5),
-      Task.find()
-        .populate(TASK_POPULATE)
-        .sort({ createdAt: -1 })
-        .limit(5),
+      Task.find().populate(TASK_POPULATE).sort({ createdAt: -1 }).limit(5),
       Task.countDocuments(),
     ]);
 

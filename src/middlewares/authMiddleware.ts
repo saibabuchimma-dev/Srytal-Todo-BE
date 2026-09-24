@@ -21,7 +21,10 @@ export function authMiddleware(
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET ?? "") as JwtPayload;
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_SECRET ?? "",
+    ) as JwtPayload;
 
     if (decoded.type !== "access") {
       throw new Error("Invalid token type");

@@ -146,14 +146,19 @@ export class EmployeeService {
   }
 
   async employeeStats() {
-    const [totalEmployees, activeEmployees, inactiveEmployees, admins, employees] =
-      await Promise.all([
-        Employee.countDocuments(),
-        Employee.countDocuments({ isActive: true }),
-        Employee.countDocuments({ isActive: false }),
-        Employee.countDocuments({ role: "Admin" }),
-        Employee.countDocuments({ role: "Employee" }),
-      ]);
+    const [
+      totalEmployees,
+      activeEmployees,
+      inactiveEmployees,
+      admins,
+      employees,
+    ] = await Promise.all([
+      Employee.countDocuments(),
+      Employee.countDocuments({ isActive: true }),
+      Employee.countDocuments({ isActive: false }),
+      Employee.countDocuments({ role: "Admin" }),
+      Employee.countDocuments({ role: "Employee" }),
+    ]);
 
     return {
       totalEmployees,
@@ -171,7 +176,10 @@ export class EmployeeService {
       throw new ApiError(404, "Employee not found");
     }
 
-    const isMatch = await bcrypt.compare(data.currentPassword, employee.password);
+    const isMatch = await bcrypt.compare(
+      data.currentPassword,
+      employee.password,
+    );
 
     if (!isMatch) {
       throw new ApiError(400, "Current password is incorrect");

@@ -30,11 +30,7 @@ const controller = new CommentController();
  *       200:
  *         description: Comments for the task
  */
-router.get(
-  "/task/:taskId",
-  authMiddleware,
-  controller.list.bind(controller),
-);
+router.get("/task/:taskId", authMiddleware, controller.list.bind(controller));
 
 /**
  * @swagger
@@ -103,11 +99,7 @@ router.post(
  *       403:
  *         description: You can only edit your own comment
  */
-router.patch(
-  "/:id",
-  authMiddleware,
-  controller.update.bind(controller),
-);
+router.patch("/:id", authMiddleware, controller.update.bind(controller));
 
 /**
  * @swagger
@@ -129,10 +121,6 @@ router.patch(
  *       403:
  *         description: You can only delete your own comment
  */
-router.delete(
-  "/:id",
-  authMiddleware,
-  controller.delete.bind(controller),
-);
+router.delete("/:id", authMiddleware, controller.delete.bind(controller));
 
 export default router;

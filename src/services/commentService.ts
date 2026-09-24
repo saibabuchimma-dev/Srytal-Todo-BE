@@ -65,9 +65,10 @@ export class CommentService {
       message: "added a comment",
     });
 
-    const recipients = [resolveId(task.assignedTo), resolveId(task.createdBy)].filter(
-      (id): id is string => !!id && id !== authorId,
-    );
+    const recipients = [
+      resolveId(task.assignedTo),
+      resolveId(task.createdBy),
+    ].filter((id): id is string => !!id && id !== authorId);
 
     for (const recipient of [...new Set(recipients)]) {
       await notificationService.notify({

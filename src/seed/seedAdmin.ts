@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import mongoose from "mongoose";
 import { connectDatabase } from "../config/database";
-import { Employee } from "../modules/employee/employee.model";
+import { Employee } from "../models/Employee";
 
 async function seedAdmin() {
   try {
