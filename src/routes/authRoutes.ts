@@ -37,7 +37,7 @@ const router = Router();
  *                 example: admin@srytal.com
  *               password:
  *                 type: string
- *                 example: password123
+ *                 example: Test@12345
  *
  *     responses:
  *       200:
