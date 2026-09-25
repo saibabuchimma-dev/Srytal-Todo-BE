@@ -21,7 +21,7 @@ async function seedAdmin() {
       console.log("Dropped legacy employeeId index");
     }
 
-    const hashedPassword = await bcrypt.hash("password123", 10);
+    const hashedPassword = await bcrypt.hash("Test@12345", 10);
 
     const result = await Employee.updateOne(
       { email },

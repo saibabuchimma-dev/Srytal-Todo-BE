@@ -136,7 +136,7 @@ SMTP_PASS=your-smtp-password
 `npm run seed` creates an admin account:
 
 - **Email:** `admin@srytal.com`
-- **Password:** `password123`
+- **Password:** `Test@12345`
 
 > Change this password immediately after first login in any non-local environment.
 
