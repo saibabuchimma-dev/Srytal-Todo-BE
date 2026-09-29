@@ -109,12 +109,28 @@ export class ProjectService {
       fullName: string;
       email: string;
       role: string;
+      avatar?: string;
     }
 
     const employeeMap = new Map<
       string,
       { employee: EmployeeBrief; taskCount: number; tasks: typeof tasks }
     >();
+
+    if (Array.isArray(project.members)) {
+      for (const member of project.members) {
+        if (!member) continue;
+        const m = member as unknown as EmployeeBrief;
+        const memberKey = String(m._id);
+        if (!employeeMap.has(memberKey)) {
+          employeeMap.set(memberKey, {
+            employee: m,
+            taskCount: 0,
+            tasks: [],
+          });
+        }
+      }
+    }
 
     let pending = 0;
     let completed = 0;
@@ -222,12 +238,14 @@ export class ProjectService {
   }
 
   async myProjects(employeeId: string) {
-    const projectIds = await Task.find({
+    const taskProjectIds = await Task.find({
       assignedTo: employeeId,
       project: { $ne: null },
     }).distinct("project");
 
-    return Project.find({ _id: { $in: projectIds } })
+    return Project.find({
+      $or: [{ members: employeeId }, { _id: { $in: taskProjectIds } }],
+    })
       .populate(PROJECT_POPULATE)
       .sort({ createdAt: -1 });
   }

@@ -31,7 +31,7 @@ export const searchProjectSchema = z.object({
 });
 
 export const assignMembersSchema = z.object({
-  employeeIds: z.array(z.string()).min(1, "At least one employee is required"),
+  employeeIds: z.array(z.string()).default([]),
 });
 
 export type CreateProjectDto = z.infer<typeof createProjectSchema>;

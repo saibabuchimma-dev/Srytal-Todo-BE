@@ -233,7 +233,6 @@ router.get("/count", authMiddleware, controller.count.bind(controller));
 router.get(
   "/:id/details",
   authMiddleware,
-  authorize("Admin"),
   controller.projectDetails.bind(controller),
 );
 
@@ -264,7 +263,6 @@ router.get(
 router.get(
   "/:projectId/employees/:employeeId/tasks",
   authMiddleware,
-  authorize("Admin"),
   controller.employeeTasks.bind(controller),
 );
 

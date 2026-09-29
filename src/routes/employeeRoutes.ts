@@ -60,7 +60,6 @@ router.post(
 router.get(
   "/",
   authMiddleware,
-  authorize("Admin"),
   controller.getAll.bind(controller),
 );
 
@@ -97,7 +96,6 @@ router.get(
 router.get(
   "/search",
   authMiddleware,
-  authorize("Admin"),
   controller.search.bind(controller),
 );
 
@@ -117,7 +115,6 @@ router.get(
 router.get(
   "/count",
   authMiddleware,
-  authorize("Admin"),
   controller.count.bind(controller),
 );
 
@@ -195,7 +192,6 @@ router.patch("/me", authMiddleware, controller.updateMe.bind(controller));
 router.get(
   "/:id",
   authMiddleware,
-  authorize("Admin"),
   controller.getById.bind(controller),
 );
 
